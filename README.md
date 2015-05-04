@@ -9,9 +9,9 @@ Versions:
 
 * Monthly Pro Subscription - http://www.gramboardpro.com/pricing/
 
-* Monthly Pro Subscription - http://www.gramboardpro.com/pricing/
+* Yearly Pro Subscription - http://www.gramboardpro.com/pricing/
 
-* Enterprise Version -       http://www.gramboardpro.com/pricing/
+* Enterprise Version       - http://www.gramboardpro.com/pricing/
 
 
 Basic Features:
