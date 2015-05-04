@@ -66,6 +66,14 @@ you can Follow,like,comment just by giving hashtags.Simply upload hasgtags,menti
 ![](http://i.imgur.com/NL1V3Xq.png)
 
 
+Devices and Platforms : 
+=========================
+Gramboardpro is available on web, desktop and mobiles. We have Android and iOS apps which work in tandem with the web app.
+=========================
+
+Build Instructions
+
+
 
 
 
