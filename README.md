@@ -3,6 +3,17 @@
 **Gramboardpro** is one of the leading marketing tool in today’s business having over 600 million users. With the growing targeting, analytics, marketing tools and promotional tactics instagram is a great digital marketing tool.
 Every new brand is opening their new instagram accounts every day, but have you ever thought how it will be possible to trace the effect of the microblogging network. How will you reach to the desired target group? And how perfectly and effectively you are using the tool.
 
+
+Versions:
+===========
+
+* Monthly Pro Subscription - http://www.gramboardpro.com/pricing/
+
+* Monthly Pro Subscription - http://www.gramboardpro.com/pricing/
+
+* Enterprise Version -       http://www.gramboardpro.com/pricing/
+
+
 Basic Features:
 ===========
 
