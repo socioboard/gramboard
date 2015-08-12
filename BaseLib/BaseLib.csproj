@@ -127,7 +127,9 @@
     <Compile Include="clsSettingDB.cs" />
     <Compile Include="DatabaseHandler.cs" />
     <Compile Include="Events.cs" />
+    <Compile Include="Globals.cs" />
     <Compile Include="GloBoardPro.cs" />
+    <Compile Include="GlobusFileHelper.cs" />
     <Compile Include="GramBoardProFileHelper.cs" />
     <Compile Include="GlobDramProHttpHelper.cs" />
     <Compile Include="GramBoardLogHelper.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="RandomNumberGenerator.cs" />
     <Compile Include="StringEncoderDecoder.cs" />
     <Compile Include="AccountStatus.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />

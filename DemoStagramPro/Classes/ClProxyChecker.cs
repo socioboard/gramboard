@@ -126,6 +126,7 @@ namespace StagramProxyChecker.classes
             string ClGlobul_ProxyList_item = (string)Item_value.GetValue(0);
             DemoStagramPro.frm_stagram frm1 = new DemoStagramPro.frm_stagram();
             Globussoft.GlobDramProHttpHelper GlobusHttpHelper = new Globussoft.GlobDramProHttpHelper();
+            ChilkatHttpHelpr objchilkat = new ChilkatHttpHelpr();
             string proxyad = string.Empty;
             string proxyport = string.Empty;
             string proxyusername = string.Empty;
@@ -163,11 +164,13 @@ namespace StagramProxyChecker.classes
                 }
                 catch { };
 
-                if (string.IsNullOrEmpty(pagesource1))
+                try
                 {
-                    pagesource1 = string.Empty;
-                    pagesource1 = GlobusHttpHelper.getHtmlfromUrlProxy(new Uri("http://web.stagram.com/"), proxyad, Convert.ToInt16(proxyport), proxyusername, proxyPassword);
+                    // pagesource1 = GlobusHttpHelper.getHtmlfromUrlProxy(new Uri("http://web.stagram.com/"), proxyad, Convert.ToInt16(proxyport), proxyusername, proxyPassword);
+
+                    pagesource1 = objchilkat.GetHtmlProxy("http://web.stagram.com/", proxyad, proxyport, proxyusername, proxyPassword);
                 }
+                catch { };
 
 
                 //int FirstPointClientId = pagesource1.IndexOf("client_id=");

@@ -16,7 +16,7 @@ namespace DemoStagramPro.Classes
         {
             try
             {
-                string insertQuery = "Insert into " + tableAccountInfo + " (Username, Password,proxyAddress,proxyPort,proxyUsername,proxyPassword,Path) values('" + username + "','" + password + "','" + addr + "','" + port + "','" + user + "','" + pass + "','" + path + "')";
+                string insertQuery = "Insert into " + tableAccountInfo + " (Username, Password,IPAddress,IPPort,IPUsername,IPPassword,Path) values('" + username + "','" + password + "','" + addr + "','" + port + "','" + user + "','" + pass + "','" + path + "')";
                 DBHandler.InsertQuery(insertQuery, tableAccountInfo);
             }
             catch { }
@@ -37,7 +37,7 @@ namespace DemoStagramPro.Classes
             DataSet ds = new DataSet();
             try
             {
-                string selectQuery = "Select Username,Password,proxyAddress,proxyPort,proxyUsername,proxyPassword,Path from " + tableAccountInfo;
+                string selectQuery = "Select Username,Password,IPAddress,IPPort,IPUsername,IPPassword,Path from " + tableAccountInfo;
                 ds = DBHandler.SelectQuery(selectQuery, tableAccountInfo);
             }
             catch { }

@@ -110,6 +110,12 @@
     <Compile Include="Classes\ScrapImages.cs" />
     <Compile Include="Classes\ScrapUserName.cs" />
     <Compile Include="ClGlobul.cs" />
+    <Compile Include="FrmAccount.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmAccount.Designer.cs">
+      <DependentUpon>FrmAccount.cs</DependentUpon>
+    </Compile>
     <Compile Include="frm_stagram.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -127,6 +133,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FrmAccount.resx">
+      <DependentUpon>FrmAccount.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frm_stagram.resx">
       <DependentUpon>frm_stagram.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -157,9 +166,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
-    <None Include="images\Banner-728x90_3.gif" />
+    <Content Include="Resources\gramLogoHD - Copy.png" />
+    <None Include="Resources\gramLogoHD.png" />
     <None Include="images\Banner1.gif" />
-    <Content Include="images\favicon.ico" />
+    <None Include="images\gramLogoHD.png" />
     <Content Include="images\tra.png" />
     <Content Include="images\tra1.png" />
     <None Include="images\Bacground.png" />

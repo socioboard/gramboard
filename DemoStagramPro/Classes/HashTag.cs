@@ -9,6 +9,7 @@ using InstagramManager.Classes;
 using Globussoft;
 using System.Data;
 using System.Threading;
+using System.Windows.Forms;
 namespace DemoStagramPro.Classes
 {
     class HashTag
@@ -45,12 +46,27 @@ namespace DemoStagramPro.Classes
             #endregion
             try
             {
+                frm_stagram objfrm_stagram = (frm_stagram)Application.OpenForms["frm_stagram"];
                 foreach (string urlToFollow in Usercount)
                 {
                     FollowUrls(ref accountManager, urlToFollow);
                     Thread.Sleep(ClGlobul.hashTagDelay * 1000);
+                   if (!string.IsNullOrEmpty(objfrm_stagram.txtHashTagDelay.Text) && NumberHelper.ValidateNumber(objfrm_stagram.txtHashTagDelay.Text))
+                    {
+                        mindelay = Convert.ToInt32(objfrm_stagram.txtHashTagDelay.Text);
+                    }
+                    if (!string.IsNullOrEmpty(objfrm_stagram.txtHashmaxTagDelay.Text) && NumberHelper.ValidateNumber(objfrm_stagram.txtHashmaxTagDelay.Text))
+                    {
+                        maxdelay = Convert.ToInt32(objfrm_stagram.txtHashmaxTagDelay.Text);
+                    }
 
-                    Log("[ " + DateTime.Now + "] " + "[Delay is " + ClGlobul.hashTagDelay + " sec. ]");
+                    Random obj_rn = new Random();
+                    int delay = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
+                    delay = obj_rn.Next(mindelay, maxdelay);
+                    Log("[ " + DateTime.Now + " ] => [ Delay For " + delay + " Seconds ]");
+                    Thread.Sleep(delay * 1000);
+
+                    //Log("[ " + DateTime.Now + "] " + "[Delay is " + ClGlobul.hashTagDelay + " sec. ]");
                    
 
 
@@ -81,14 +97,30 @@ namespace DemoStagramPro.Classes
 
             try
             {
+                frm_stagram objfrm_stagram = (frm_stagram)Application.OpenForms["frm_stagram"];
                 foreach (string urlToLike in hashTag)//hashTag //snapsVideoUrl
                 {
 
 
                     LikeSnapsVideos(ref accountManager, urlToLike);
                     Thread.Sleep(ClGlobul.hashTagFolloweDelay * 1000);
+                    if (!string.IsNullOrEmpty(objfrm_stagram.txtHashTagDelay.Text) && NumberHelper.ValidateNumber(objfrm_stagram.txtHashTagDelay.Text))
+                    {
+                        mindelay = Convert.ToInt32(objfrm_stagram.txtHashTagDelay.Text);
+                    }
+                    if (!string.IsNullOrEmpty(objfrm_stagram.txtHashmaxTagDelay.Text) && NumberHelper.ValidateNumber(objfrm_stagram.txtHashmaxTagDelay.Text))
+                    {
+                        maxdelay = Convert.ToInt32(objfrm_stagram.txtHashmaxTagDelay.Text);
+                    }
 
-                    Log("[ " + DateTime.Now + "] " + "[Delay is " + ClGlobul.hashTagDelay + " sec. ]");
+                    Random obj_rn = new Random();
+                    int delay = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
+                    delay = obj_rn.Next(mindelay, maxdelay);
+                    Log("[ " + DateTime.Now + " ] => [ Delay For " + delay + " Seconds ]");
+                    Thread.Sleep(delay * 1000);
+
+
+                   // Log("[ " + DateTime.Now + "] " + "[Delay is " + ClGlobul.hashTagDelay + " sec. ]");
 
                 }
             }
@@ -114,12 +146,28 @@ namespace DemoStagramPro.Classes
 
             try
             {
+                frm_stagram objfrm_stagram = (frm_stagram)Application.OpenForms["frm_stagram"];
                 foreach (string urlToComment in hashTag)
                 {
                     LikeSnapsVideos(ref accountManager, urlToComment);
                     Thread.Sleep(ClGlobul.hashTagFolloweDelay * 1000);
+                    if (!string.IsNullOrEmpty(objfrm_stagram.txtHashTagDelay.Text) && NumberHelper.ValidateNumber(objfrm_stagram.txtHashTagDelay.Text))
+                    {
+                        mindelay = Convert.ToInt32(objfrm_stagram.txtHashTagDelay.Text);
+                    }
+                    if (!string.IsNullOrEmpty(objfrm_stagram.txtHashmaxTagDelay.Text) && NumberHelper.ValidateNumber(objfrm_stagram.txtHashmaxTagDelay.Text))
+                    {
+                        maxdelay = Convert.ToInt32(objfrm_stagram.txtHashmaxTagDelay.Text);
+                    }
 
-                    Log("[ " + DateTime.Now + "] " + "[Delay is " + ClGlobul.hashTagDelay + " sec. ]");
+                    Random obj_rn = new Random();
+                    int delay = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
+                    delay = obj_rn.Next(mindelay, maxdelay);
+                    Log("[ " + DateTime.Now + " ] => [ Delay For " + delay + " Seconds ]");
+                    Thread.Sleep(delay * 1000);
+
+
+                   // Log("[ " + DateTime.Now + "] " + "[Delay is " + ClGlobul.hashTagDelay + " sec. ]");
                  
                 }
             }

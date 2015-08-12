@@ -55,7 +55,9 @@ namespace DemoStagramPro.Classes
             catch { }
         }
 
-
+        Dictionary<string, string> duplicateurl = new Dictionary<string, string>();
+        int mindelay = 5;
+        int maxdelay = 10;
         public void startUserScraper(string itemHash, int delay)
 
         {
@@ -68,7 +70,7 @@ namespace DemoStagramPro.Classes
             try
             {
                 GlobDramProHttpHelper _GlobusHttpHelper = new GlobDramProHttpHelper();
-                pageSource = _GlobusHttpHelper.getHtmlfromUrl(new Uri(mainUrl));
+                pageSource = _GlobusHttpHelper.getHtmlfromUrl(new Uri(mainUrl),"");
                 if (!string.IsNullOrEmpty(pageSource))
                 {
                     //if (itemHash.StartsWith("#"))
@@ -113,11 +115,13 @@ namespace DemoStagramPro.Classes
                                                     lstCountScrapUser = lstCountScrapUser.Distinct().ToList();
 
 
-                                                    if (!string.IsNullOrEmpty(userName))
+                                                    if (!string.IsNullOrEmpty(userLink))
                                                     {
+                                                        duplicateurl.Add(userLink + userName, userLink + userName);
                                                         #region CSV Write
                                                         try
                                                         {
+
                                                             string CSVData = itemHash.Replace(",", string.Empty) + "," + userName.Replace(",", string.Empty) + "," + (userLink + userName).Replace(",", string.Empty);
                                                             GramBoardProFileHelper.ExportDataCSVFile(CSVHeader, CSVData, CSVPath);
                                                         }
@@ -125,7 +129,7 @@ namespace DemoStagramPro.Classes
                                                         try
                                                         {
 
-                                                        GramBoardLogHelper.log.Info("["+ userName +","+ "itemHash:" +","+ itemHash +","+ "userName:" +","+ userName +","+ "userLink:" +","+ userLink + userName +"]");
+                                                        GramBoardLogHelper.log.Info("["+ userName +","+ "itemHash:" +","+ itemHash +","+ "userName:" +","+ userName +","+ "userLink:" +","+ userLink + ","+" UserName" +userName +"]");
 
                                                         }
                                                         catch { };
@@ -141,8 +145,25 @@ namespace DemoStagramPro.Classes
                                                                 {
                                                                     GramBoardLogHelper.log.Info("=> [  UserName" + userName + " ]");
                                                                     //HashLogger.printLogger("[ " + DateTime.Now + " ] => [ Delay for " + delay + " seconds ]");
-                                                                    GramBoardLogHelper.log.Info(" => [ Delay for " + delay + " seconds ]");
-                                                                    Thread.Sleep(delay * 1000);
+                                                                    //GramBoardLogHelper.log.Info(" => [ Delay for " + delay + " seconds ]");
+                                                                    //Thread.Sleep(delay * 1000);
+
+                                                                    frm_stagram objfrm_stagram = (frm_stagram)Application.OpenForms["frm_stagram"];
+                                                                   
+                                                                    if (!string.IsNullOrEmpty(objfrm_stagram.txtDelayHashTag.Text) && NumberHelper.ValidateNumber(objfrm_stagram.txtDelayHashTag.Text))
+                                                                    {
+                                                                        mindelay = Convert.ToInt32(objfrm_stagram.txtDelayHashTag.Text);
+                                                                    }
+                                                                    if (!string.IsNullOrEmpty(objfrm_stagram.MinHashTagMinDelay.Text) && NumberHelper.ValidateNumber(objfrm_stagram.MinHashTagMinDelay.Text))
+                                                                    {
+                                                                        maxdelay = Convert.ToInt32(objfrm_stagram.MinHashTagMinDelay.Text);
+                                                                    }
+
+                                                                    Random obj_rn = new Random();
+                                                                    int delay1 = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
+                                                                    delay1 = obj_rn.Next(mindelay, maxdelay);
+                                                                    GramBoardLogHelper.log.Info("[ " + DateTime.Now + " ] => [ Delay For " + delay1 + " Seconds ]");
+                                                                    Thread.Sleep(delay1 * 1000);
                                                                 }
                                                                 catch { }
                                                             }
@@ -150,10 +171,6 @@ namespace DemoStagramPro.Classes
                                                             {
                                                                 return;
                                                             }
-
-
-
-
                                                         }
                                                         catch { }
                                                     }

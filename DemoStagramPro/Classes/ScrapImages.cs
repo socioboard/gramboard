@@ -16,7 +16,7 @@ namespace DemoStagramPro.Classes
         public static bool stopScrapImageBool = false;
         private const string mainUrl = "http://websta.me/";
         private const string userLink = "http://websta.me/n/";
-        private const string CSVHeader = "HashTag,Image Link,Image Url,Status";
+        private const string CSVHeader = "WebsiteLink,ImageLink,Imageid,FullName";
         private string CSVPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\Gram BoardPro\\ImageDetails.csv";
 
         private static readonly Object _lockObject = new Object();
@@ -49,317 +49,459 @@ namespace DemoStagramPro.Classes
             }
             catch { }
         }
-        public void startDownloadingImage(string itemImageTag, int delay )
+        //public void startDownloadingImage(string itemImageTag, int delay )
+        //{
+        //    string pageSource = string.Empty;
+        //    List<string> lstCountScrape = new List<string>();
+        //      if (stopScrapImageBool) return;
+        //        try
+        //        {
+        //            GlobDramProHttpHelper _GlobusHttpHelper = new GlobDramProHttpHelper();
+        //            try
+        //            {
+        //                pageSource = _GlobusHttpHelper.getHtmlfromUrl(new Uri(mainUrl));
+        //            }
+        //            catch { }
+        //            if (!string.IsNullOrEmpty(pageSource))
+        //            {
+        //                string url = mainUrl + "tag/" + itemImageTag;
+        //                try
+        //                {
+        //                    pageSource = _GlobusHttpHelper.getHtmlfromUrl(new Uri(url));
+        //                }
+        //                catch { }
+        //                if (!string.IsNullOrEmpty(pageSource))
+        //                {
+        //                    if (pageSource.Contains("<div class=\"mainimg_wrapper\">"))
+        //                    {
+        //                        try
+        //                        {
+        //                            string[] arr = Regex.Split(pageSource, "<div class=\"mainimg_wrapper\">");
+
+        //                            if (arr.Length > 1)
+        //                            {
+        //                                arr = arr.Skip(1).ToArray();
+        //                                foreach (string itemarr in arr)
+        //                                {
+        //                                    if (stopScrapImageBool) return;
+        //                                    try
+        //                                    {
+        //                                        string startString = "<a href=\"";
+        //                                        string endString = "\" class=\"mainimg\"";
+        //                                        string imageId = string.Empty;
+        //                                        string imageSrc = string.Empty;
+        //                                        if (itemarr.Contains("<a href=\"/p/"))
+        //                                        {
+        //                                            int indexStart = itemarr.IndexOf("<a href=\"/p/");
+        //                                            string itemarrNow = itemarr.Substring(indexStart);
+        //                                            if (itemarrNow.Contains(startString) && itemarrNow.Contains(endString))
+        //                                            {
+        //                                                try
+        //                                                {
+        //                                                    imageId = ScrapUserName.getBetween(itemarrNow, startString, endString);
+
+        //                                                }
+        //                                                catch { }
+        //                                                if (!string.IsNullOrEmpty(imageId))
+        //                                                {
+        //                                                    imageId = "http://websta.me" + imageId;
+        //                                                }
+        //                                            }
+
+        //                                            if (itemarrNow.Contains("<img src=\""))
+        //                                            {
+        //                                                try
+        //                                                {
+        //                                                    imageSrc = ScrapUserName.getBetween(itemarrNow, "<img src=\"", "\"");
+        //                                                    lstCountScrape.Add(imageSrc);
+        //                                                    lstCountScrape = lstCountScrape.Distinct().ToList();
+        //                                                }
+        //                                                catch { }
+        //                                            }
+        //                                        }
+
+        //                                        #region Get Comments
+        //                                        string comments = string.Empty;
+        //                                        try
+        //                                        {
+        //                                            comments = getComments(itemarr);
+        //                                        }
+        //                                        catch { }
+        //                                        #endregion
+
+
+
+        //                                        #region CSV Write
+        //                                        if (stopScrapImageBool) return;
+        //                                        try
+        //                                        {
+        //                                            string CSVData = itemImageTag.Replace(",", string.Empty) + "," + imageId.Replace(",", string.Empty) + "," + imageSrc.Replace(",", string.Empty) + "," + comments.Replace(",", string.Empty);
+        //                                            GramBoardProFileHelper.ExportDataCSVFile(CSVHeader, CSVData, CSVPath);
+        //                                            classsforlogger objclasssforlogger = new classsforlogger();
+        //                                            objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ itemImageTag : " + itemImageTag + "   imageId : " + imageId + "   imageSrc : " + imageSrc + "  comments : " + comments);
+        //                                            //frm_stagram objbbbFrmMain = (frm_stagram)Application.OpenForms["frm_stagram"];
+        //                                            //objbbbFrmMain.lstImageLogger.Items.Add("hey ram");
+
+
+        //                                        }
+        //                                        catch { }
+        //                                        #endregion
+
+        //                                        #region Logger Show
+        //                                        if (stopScrapImageBool) return;
+        //                                        try
+        //                                        {
+        //                                            classsforlogger objclasssforlogger = new classsforlogger();
+        //                                            //HashLogger.printLogger("[ " + DateTime.Now + " ] => [ " + imageId + " ]");
+        //                                            //HashLogger.printLogger("[ " + DateTime.Now + " ] => [ Delay for " + delay + " seconds ]");
+        //                                            objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ " + imageId + " ]");
+        //                                            objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Delay for " + delay + " seconds ]");
+        //                                            Thread.Sleep(delay * 1000);
+
+        //                                            if (lstCountScrape.Count >= ClGlobul.countNOOfFollowersandImageDownload)
+        //                                            {
+        //                                                return;
+        //                                            }
+
+        //                                        }
+        //                                        catch { }
+        //                                        #endregion
+
+        //                                    }
+        //                                    catch { }
+        //                                }
+
+        //                                if (lstCountScrape.Count >= ClGlobul.countNOOfFollowersandImageDownload)
+        //                                {
+        //                                    return;
+        //                                }
+        //                                classsforlogger objclasssforlogger2 = new classsforlogger();
+        //                                objclasssforlogger2.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Process Completed ]");
+
+        //                                #region pagination
+        //                                string pageLink = string.Empty;
+        //                                while (true)
+        //                                {
+        //                                    if (stopScrapImageBool) return;
+        //                                    string startString = "<a href=\"";
+        //                                    string endString = "\" class=\"mainimg\"";
+        //                                    string imageId = string.Empty;
+        //                                    string imageSrc = string.Empty;
+
+        //                                    if (!string.IsNullOrEmpty(pageLink))
+        //                                    {
+        //                                        pageSource = _GlobusHttpHelper.getHtmlfromUrl(new Uri(pageLink));
+        //                                    }
+
+        //                                    if (pageSource.Contains("<ul class=\"pager\">") && pageSource.Contains("rel=\"next\">"))
+        //                                    {
+        //                                        try
+        //                                        {
+        //                                            pageLink = ScrapUserName.getBetween(pageSource, "<ul class=\"pager\">", "rel=\"next\">");
+        //                                        }
+        //                                        catch { }
+        //                                        if (!string.IsNullOrEmpty(pageLink))
+        //                                        {
+        //                                            try
+        //                                            {
+        //                                                int len = pageLink.IndexOf("<a href=\"");
+        //                                                len = len + ("<a href=\"").Length;
+        //                                                pageLink = pageLink.Substring(len);
+        //                                                pageLink = pageLink.Trim();
+        //                                                pageLink = pageLink.TrimEnd(new char[] { '"' });
+        //                                                pageLink = "http://websta.me/" + pageLink;
+        //                                            }
+        //                                            catch { }
+        //                                            if (!string.IsNullOrEmpty(pageLink))
+        //                                            {
+        //                                                string response = string.Empty;
+        //                                                try
+        //                                                {
+        //                                                    response = _GlobusHttpHelper.getHtmlfromUrl(new Uri(pageLink));
+        //                                                }
+        //                                                catch { }
+        //                                                if (!string.IsNullOrEmpty(response))
+        //                                                {
+        //                                                    if (response.Contains("<div class=\"mainimg_wrapper\">"))
+        //                                                    {
+        //                                                        try
+        //                                                        {
+        //                                                            string[] arr1 = Regex.Split(response, "<div class=\"mainimg_wrapper\">");
+        //                                                            if (arr1.Length > 1)
+        //                                                            {
+        //                                                                arr1 = arr1.Skip(1).ToArray();
+        //                                                                foreach (string items in arr1)
+        //                                                                {
+        //                                                                    try
+        //                                                                    {
+        //                                                                        if (stopScrapImageBool) return;
+        //                                                                        if (items.Contains("<a href=\"/p/"))
+        //                                                                        {
+        //                                                                            int indexStart = items.IndexOf("<a href=\"/p/");
+        //                                                                            string itemarrNow = items.Substring(indexStart);
+
+        //                                                                            if (itemarrNow.Contains(startString) && itemarrNow.Contains(endString))
+        //                                                                            {
+        //                                                                                try
+        //                                                                                {
+        //                                                                                    imageId = ScrapUserName.getBetween(itemarrNow, startString, endString);
+        //                                                                                }
+        //                                                                                catch { }
+        //                                                                                if (!string.IsNullOrEmpty(imageId))
+        //                                                                                {
+        //                                                                                    imageId = "http://websta.me" + imageId;
+        //                                                                                }
+        //                                                                            }
+
+        //                                                                            if (itemarrNow.Contains("<img src=\""))
+        //                                                                            {
+        //                                                                                try
+        //                                                                                {
+        //                                                                                    imageSrc = ScrapUserName.getBetween(itemarrNow, "<img src=\"", "\"");
+        //                                                                                    lstCountScrape.Add(imageSrc);
+        //                                                                                    lstCountScrape = lstCountScrape.Distinct().ToList();
+        //                                                                                }
+        //                                                                                catch { }
+        //                                                                            }
+
+        //                                                                            #region Get Comments
+        //                                                                            string comments = string.Empty;
+        //                                                                            try
+        //                                                                            {
+        //                                                                                comments = getComments(itemarrNow);
+        //                                                                            }
+        //                                                                            catch { }
+        //                                                                            #endregion
+
+        //                                                                            #region CSV Write
+        //                                                                            if (stopScrapImageBool) return;
+        //                                                                            try
+        //                                                                            {
+        //                                                                                string CSVData = itemImageTag.Replace(",", string.Empty) + "," + imageId.Replace(",", string.Empty) + "," + imageSrc.Replace(",", string.Empty) + "," + comments.Replace(",", string.Empty);
+        //                                                                                GramBoardProFileHelper.ExportDataCSVFile(CSVHeader, CSVData, CSVPath);
+        //                                                                            }
+        //                                                                            catch { }
+        //                                                                            #endregion
+
+        //                                                                            #region Logger Show
+        //                                                                            if (stopScrapImageBool) return;
+        //                                                                            try
+        //                                                                            {
+        //                                                                                classsforlogger objclasssforlogger = new classsforlogger();
+        //                                                                                objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ " + imageId + " ]");
+        //                                                                                objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Delay for " + delay + " seconds ]");
+        //                                                                                Thread.Sleep(delay * 1000);
+
+        //                                                                                if (lstCountScrape.Count >= ClGlobul.countNOOfFollowersandImageDownload)
+        //                                                                                {
+        //                                                                                    return;
+        //                                                                                }
+
+        //                                                                            }
+        //                                                                            catch { }
+        //                                                                            #endregion
+
+        //                                                                        }
+
+        //                                                                    }
+        //                                                                    catch { }
+        //                                                                }
+        //                                                            }
+        //                                                        }
+        //                                                        catch { }
+
+        //                                                    }
+        //                                                }
+        //                                                else
+        //                                                {
+
+        //                                                }
+
+        //                                            }
+        //                                            else
+        //                                            {
+        //                                                break;
+        //                                            }
+        //                                        }
+        //                                        else
+        //                                        {
+        //                                            break;
+        //                                        }
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        break;
+        //                                    }
+        //                                }
+
+        //                                if (lstCountScrape.Count >= ClGlobul.countNOOfFollowersandImageDownload)
+        //                                {
+        //                                    return;
+        //                                }
+        //                                #endregion
+        //                            }
+        //                        }
+        //                        catch { }
+        //                    }
+        //                }//End of 2nd if (!string.IsNullOrEmpty(pageSource)) of tagged pageSource
+        //                else
+        //                {
+        //                    //Tag PageSource is empty
+        //                }
+        //            }
+        //            else
+        //            {
+        //                //PageSource is empty
+        //            }
+        //        }
+            
+        //        catch { };
+
+        //        classsforlogger objclasssforlogger1 = new classsforlogger();
+        //        objclasssforlogger1.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Process Completed ]");
+        //    }
+
+        Dictionary<string, string> duplicatlink = new Dictionary<string, string>();
+        int mindelay = 5;
+        int maxdelay = 10;
+        public void startDownloadingImage(string itemImageTag, int delay)
         {
             string pageSource = string.Empty;
             List<string> lstCountScrape = new List<string>();
-              if (stopScrapImageBool) return;
+            if (stopScrapImageBool) return;
+            //try
+            //{
+            GlobDramProHttpHelper _GlobusHttpHelper = new GlobDramProHttpHelper();
+            try
+            {
+                pageSource = _GlobusHttpHelper.getHtmlfromUrl(new Uri(mainUrl),"");
+            }
+            catch { }
+            string url = string.Empty;
+            if (!string.IsNullOrEmpty(pageSource))
+            {
+                if (itemImageTag.Contains("#"))
+                {
+                    itemImageTag = itemImageTag.Replace("#", "%23");
+                    url = mainUrl + "tag/" + itemImageTag.Replace("%23", string.Empty);
+                }
+                else
+                {
+                    url = mainUrl + "n/" + itemImageTag.Replace("%23", string.Empty);
+                }
                 try
                 {
-                    GlobDramProHttpHelper _GlobusHttpHelper = new GlobDramProHttpHelper();
-                    try
+                    pageSource = _GlobusHttpHelper.getHtmlfromUrl(new Uri(url),"");
+                }
+                catch { }
+                if (!string.IsNullOrEmpty(pageSource))
+                {
+                    // if (pageSource.Contains("<div class=\"mainimg_wrapper\">"))
+                    if (pageSource.Contains("class=\"username\""))
                     {
-                        pageSource = _GlobusHttpHelper.getHtmlfromUrl(new Uri(mainUrl));
-                    }
-                    catch { }
-                    if (!string.IsNullOrEmpty(pageSource))
-                    {
-                        string url = mainUrl + "tag/" + itemImageTag;
                         try
                         {
-                            pageSource = _GlobusHttpHelper.getHtmlfromUrl(new Uri(url));
-                        }
-                        catch { }
-                        if (!string.IsNullOrEmpty(pageSource))
-                        {
-                            if (pageSource.Contains("<div class=\"mainimg_wrapper\">"))
-                            {
-                                try
-                                {
-                                    string[] arr = Regex.Split(pageSource, "<div class=\"mainimg_wrapper\">");
 
-                                    if (arr.Length > 1)
+                            // string[] arr = Regex.Split(pageSource, "<div class=\"mainimg_wrapper\">");
+                            string[] arr = Regex.Split(pageSource, "class=\"username\"");
+                            if (arr.Length > 1)
+                            {
+                                arr = arr.Skip(1).ToArray();
+                                foreach (var item in arr)
+                                {
+                                    string websiteLink = ScrapUserName.getBetween(item, "<a href=\"", "\"");
+                                    websiteLink = "http://websta.me/" + websiteLink;
+                                    string imageLink = ScrapUserName.getBetween(item, "src=\"", "\"");
+                                    string imageid = ScrapUserName.getBetween(item, ".2885-19/", "_a.jpg\">");
+                                    string FullName = ScrapUserName.getBetween(item, "\">", "</a>");
+                                    lstCountScrape.Add(imageLink);
+                                    lstCountScrape = lstCountScrape.Distinct().ToList();
+
+                                    if (stopScrapImageBool) return;
+                                    try
                                     {
-                                        arr = arr.Skip(1).ToArray();
-                                        foreach (string itemarr in arr)
+                                        if (!string.IsNullOrEmpty(imageLink))
                                         {
-                                            if (stopScrapImageBool) return;
+                                            duplicatlink.Add(imageLink, imageid);
+
+                                            string CSVData = websiteLink.Replace(",", string.Empty) + "," + imageLink.Replace(",", string.Empty) + "," + imageid.Replace(",", string.Empty) + "," + FullName.Replace(",", string.Empty);
+                                            GramBoardProFileHelper.ExportDataCSVFile(CSVHeader, CSVData, CSVPath);
+                                            classsforlogger objclasssforlogger = new classsforlogger();
+                                            objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ websiteLink : " + websiteLink + "   imageLink : " + imageLink + "   imageid : " + imageid + "   FullName : " + FullName);
+                                           
+                                            //frm_stagram objbbbFrmMain = (frm_stagram)Application.OpenForms["frm_stagram"];
+                                            //objbbbFrmMain.lstImageLogger.Items.Add("hey ram");
+                                            if (lstCountScrape.Count >= ClGlobul.countNOOfFollowersandImageDownload)
+                                            {
+                                                return;
+                                            }
+                                        }
+                                    }
+                                    catch { }
+                                    if (stopScrapImageBool) return;
+                                    try
+                                    {
+                                        classsforlogger objclasssforlogger = new classsforlogger();
+
+                                        lock (_lockObject)
+                                        {
                                             try
                                             {
-                                                string startString = "<a href=\"";
-                                                string endString = "\" class=\"mainimg\"";
-                                                string imageId = string.Empty;
-                                                string imageSrc = string.Empty;
-                                                if (itemarr.Contains("<a href=\"/p/"))
+
+                                                frm_stagram objfrm_stagram = (frm_stagram)Application.OpenForms["frm_stagram"];
+
+                                                if (!string.IsNullOrEmpty(objfrm_stagram.txtmaxDelayGetImageImage.Text) && NumberHelper.ValidateNumber(objfrm_stagram.txtmaxDelayGetImageImage.Text))
                                                 {
-                                                    int indexStart = itemarr.IndexOf("<a href=\"/p/");
-                                                    string itemarrNow = itemarr.Substring(indexStart);
-                                                    if (itemarrNow.Contains(startString) && itemarrNow.Contains(endString))
-                                                    {
-                                                        try
-                                                        {
-                                                            imageId = ScrapUserName.getBetween(itemarrNow, startString, endString);
-
-                                                        }
-                                                        catch { }
-                                                        if (!string.IsNullOrEmpty(imageId))
-                                                        {
-                                                            imageId = "http://websta.me" + imageId;
-                                                        }
-                                                    }
-
-                                                    if (itemarrNow.Contains("<img src=\""))
-                                                    {
-                                                        try
-                                                        {
-                                                            imageSrc = ScrapUserName.getBetween(itemarrNow, "<img src=\"", "\"");
-                                                            lstCountScrape.Add(imageSrc);
-                                                            lstCountScrape = lstCountScrape.Distinct().ToList();
-                                                        }
-                                                        catch { }
-                                                    }
+                                                    mindelay = Convert.ToInt32(objfrm_stagram.txtmaxDelayGetImageImage.Text);
+                                                }
+                                                if (!string.IsNullOrEmpty(objfrm_stagram.txtminDelayGetImageImage.Text) && NumberHelper.ValidateNumber(objfrm_stagram.txtminDelayGetImageImage.Text))
+                                                {
+                                                    maxdelay = Convert.ToInt32(objfrm_stagram.txtminDelayGetImageImage.Text);
                                                 }
 
-                                                #region Get Comments
-                                                string comments = string.Empty;
-                                                try
-                                                {
-                                                    comments = getComments(itemarr);
-                                                }
-                                                catch { }
-                                                #endregion
-
-
-
-                                                #region CSV Write
-                                                if (stopScrapImageBool) return;
-                                                try
-                                                {
-                                                    string CSVData = itemImageTag.Replace(",", string.Empty) + "," + imageId.Replace(",", string.Empty) + "," + imageSrc.Replace(",", string.Empty) + "," + comments.Replace(",", string.Empty);
-                                                    GramBoardProFileHelper.ExportDataCSVFile(CSVHeader, CSVData, CSVPath);
-                                                    classsforlogger objclasssforlogger = new classsforlogger();
-                                                    objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ itemImageTag : " + itemImageTag + "   imageId : " + imageId + "   imageSrc : " + imageSrc + "  comments : " + comments);
-                                                    //frm_stagram objbbbFrmMain = (frm_stagram)Application.OpenForms["frm_stagram"];
-                                                    //objbbbFrmMain.lstImageLogger.Items.Add("hey ram");
-
-
-                                                }
-                                                catch { }
-                                                #endregion
-
-                                                #region Logger Show
-                                                if (stopScrapImageBool) return;
-                                                try
-                                                {
-                                                    classsforlogger objclasssforlogger = new classsforlogger();
-                                                    //HashLogger.printLogger("[ " + DateTime.Now + " ] => [ " + imageId + " ]");
-                                                    //HashLogger.printLogger("[ " + DateTime.Now + " ] => [ Delay for " + delay + " seconds ]");
-                                                    objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ " + imageId + " ]");
-                                                    objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Delay for " + delay + " seconds ]");
-                                                    Thread.Sleep(delay * 1000);
-
-                                                    if (lstCountScrape.Count >= ClGlobul.countNOOfFollowersandImageDownload)
-                                                    {
-                                                        return;
-                                                    }
-
-                                                }
-                                                catch { }
-                                                #endregion
-
+                                                Random obj_rn = new Random();
+                                                int delay1 = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
+                                                delay1 = obj_rn.Next(mindelay, maxdelay);
+                                                objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Delay For " + delay1 + " Seconds ]");
+                                                Thread.Sleep(delay1 * 1000);
                                             }
                                             catch { }
                                         }
 
-                                        if (lstCountScrape.Count >= ClGlobul.countNOOfFollowersandImageDownload)
-                                        {
-                                            return;
-                                        }
-                                        classsforlogger objclasssforlogger2 = new classsforlogger();
-                                        objclasssforlogger2.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Process Completed ]");
-
-                                        #region pagination
-                                        string pageLink = string.Empty;
-                                        while (true)
-                                        {
-                                            if (stopScrapImageBool) return;
-                                            string startString = "<a href=\"";
-                                            string endString = "\" class=\"mainimg\"";
-                                            string imageId = string.Empty;
-                                            string imageSrc = string.Empty;
-
-                                            if (!string.IsNullOrEmpty(pageLink))
-                                            {
-                                                pageSource = _GlobusHttpHelper.getHtmlfromUrl(new Uri(pageLink));
-                                            }
-
-                                            if (pageSource.Contains("<ul class=\"pager\">") && pageSource.Contains("rel=\"next\">"))
-                                            {
-                                                try
-                                                {
-                                                    pageLink = ScrapUserName.getBetween(pageSource, "<ul class=\"pager\">", "rel=\"next\">");
-                                                }
-                                                catch { }
-                                                if (!string.IsNullOrEmpty(pageLink))
-                                                {
-                                                    try
-                                                    {
-                                                        int len = pageLink.IndexOf("<a href=\"");
-                                                        len = len + ("<a href=\"").Length;
-                                                        pageLink = pageLink.Substring(len);
-                                                        pageLink = pageLink.Trim();
-                                                        pageLink = pageLink.TrimEnd(new char[] { '"' });
-                                                        pageLink = "http://websta.me/" + pageLink;
-                                                    }
-                                                    catch { }
-                                                    if (!string.IsNullOrEmpty(pageLink))
-                                                    {
-                                                        string response = string.Empty;
-                                                        try
-                                                        {
-                                                            response = _GlobusHttpHelper.getHtmlfromUrl(new Uri(pageLink));
-                                                        }
-                                                        catch { }
-                                                        if (!string.IsNullOrEmpty(response))
-                                                        {
-                                                            if (response.Contains("<div class=\"mainimg_wrapper\">"))
-                                                            {
-                                                                try
-                                                                {
-                                                                    string[] arr1 = Regex.Split(response, "<div class=\"mainimg_wrapper\">");
-                                                                    if (arr1.Length > 1)
-                                                                    {
-                                                                        arr1 = arr1.Skip(1).ToArray();
-                                                                        foreach (string items in arr1)
-                                                                        {
-                                                                            try
-                                                                            {
-                                                                                if (stopScrapImageBool) return;
-                                                                                if (items.Contains("<a href=\"/p/"))
-                                                                                {
-                                                                                    int indexStart = items.IndexOf("<a href=\"/p/");
-                                                                                    string itemarrNow = items.Substring(indexStart);
-
-                                                                                    if (itemarrNow.Contains(startString) && itemarrNow.Contains(endString))
-                                                                                    {
-                                                                                        try
-                                                                                        {
-                                                                                            imageId = ScrapUserName.getBetween(itemarrNow, startString, endString);
-                                                                                        }
-                                                                                        catch { }
-                                                                                        if (!string.IsNullOrEmpty(imageId))
-                                                                                        {
-                                                                                            imageId = "http://websta.me" + imageId;
-                                                                                        }
-                                                                                    }
-
-                                                                                    if (itemarrNow.Contains("<img src=\""))
-                                                                                    {
-                                                                                        try
-                                                                                        {
-                                                                                            imageSrc = ScrapUserName.getBetween(itemarrNow, "<img src=\"", "\"");
-                                                                                            lstCountScrape.Add(imageSrc);
-                                                                                            lstCountScrape = lstCountScrape.Distinct().ToList();
-                                                                                        }
-                                                                                        catch { }
-                                                                                    }
-
-                                                                                    #region Get Comments
-                                                                                    string comments = string.Empty;
-                                                                                    try
-                                                                                    {
-                                                                                        comments = getComments(itemarrNow);
-                                                                                    }
-                                                                                    catch { }
-                                                                                    #endregion
-
-                                                                                    #region CSV Write
-                                                                                    if (stopScrapImageBool) return;
-                                                                                    try
-                                                                                    {
-                                                                                        string CSVData = itemImageTag.Replace(",", string.Empty) + "," + imageId.Replace(",", string.Empty) + "," + imageSrc.Replace(",", string.Empty) + "," + comments.Replace(",", string.Empty);
-                                                                                        GramBoardProFileHelper.ExportDataCSVFile(CSVHeader, CSVData, CSVPath);
-                                                                                    }
-                                                                                    catch { }
-                                                                                    #endregion
-
-                                                                                    #region Logger Show
-                                                                                    if (stopScrapImageBool) return;
-                                                                                    try
-                                                                                    {
-                                                                                        classsforlogger objclasssforlogger = new classsforlogger();
-                                                                                        objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ " + imageId + " ]");
-                                                                                        objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Delay for " + delay + " seconds ]");
-                                                                                        Thread.Sleep(delay * 1000);
-
-                                                                                        if (lstCountScrape.Count >= ClGlobul.countNOOfFollowersandImageDownload)
-                                                                                        {
-                                                                                            return;
-                                                                                        }
-
-                                                                                    }
-                                                                                    catch { }
-                                                                                    #endregion
-
-                                                                                }
-
-                                                                            }
-                                                                            catch { }
-                                                                        }
-                                                                    }
-                                                                }
-                                                                catch { }
-
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-
-                                                        }
-
-                                                    }
-                                                    else
-                                                    {
-                                                        break;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    break;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                break;
-                                            }
-                                        }
+                                        //HashLogger.printLogger("[ " + DateTime.Now + " ] => [ " + imageId + " ]");
+                                        //HashLogger.printLogger("[ " + DateTime.Now + " ] => [ Delay for " + delay + " seconds ]");
+                                        objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ " + websiteLink + " ]");
+                                        //objclasssforlogger.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Delay for " + delay + " seconds ]");
+                                        //Thread.Sleep(delay * 1000);
+                                      
 
                                         if (lstCountScrape.Count >= ClGlobul.countNOOfFollowersandImageDownload)
                                         {
                                             return;
                                         }
-                                        #endregion
                                     }
+                                    catch { };
                                 }
-                                catch { }
                             }
-                        }//End of 2nd if (!string.IsNullOrEmpty(pageSource)) of tagged pageSource
-                        else
-                        {
-                            //Tag PageSource is empty
+                            
+                             if (lstCountScrape.Count >= ClGlobul.countNOOfFollowersandImageDownload)
+                             {
+                                 return;
+                             }
+
                         }
-                    }
-                    else
-                    {
-                        //PageSource is empty
+                        catch { };
                     }
                 }
-            
-                catch { };
-
-                classsforlogger objclasssforlogger1 = new classsforlogger();
-                objclasssforlogger1.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Process Completed ]");
             }
+
+
+
+            classsforlogger objclasssforlogger1 = new classsforlogger();
+            objclasssforlogger1.AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Process Completed ]");
+        }
+
+
             
         #region Get Comments of Images
         /// <summary>

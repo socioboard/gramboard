@@ -21,6 +21,7 @@ using StagramProxyChecker.classes;
 using BaseLib;
 using log4net.Config;
 using System.Net;
+using Microsoft.VisualBasic.CompilerServices;
 
 #endregion
 
@@ -47,8 +48,6 @@ namespace DemoStagramPro
         public static string FileData = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\imageuploade\\LoggerError.txt";
         public static string Error = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\imageuploadProDataDirectory\\LoggerError.txt";
 
-
-
         public string LoggerProperty
         {
             set
@@ -56,8 +55,6 @@ namespace DemoStagramPro
                 this.lstHashLogger.Invoke(new MethodInvoker(delegate() { DoLoggerWork(value); }));
             }
         }
-
-
 
         public string LoggerImageProperty
         {
@@ -126,6 +123,7 @@ namespace DemoStagramPro
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            CopyDatabase();
            
             System.Windows.Forms.ToolTip ToolTip1 = new System.Windows.Forms.ToolTip();
             ToolTip1.SetToolTip(this.txt_FollowUser, "Enter single Username or mutiple separated by comma to Follow");
@@ -153,9 +151,6 @@ namespace DemoStagramPro
             dgvFollowers.ForeColor = Color.Black;
             dgvAccount.ForeColor = Color.Black;
             
-
-
-            CopyDatabase();
             loadAccount();
             loadComboboxData();
             loaddatafmdb();
@@ -165,8 +160,8 @@ namespace DemoStagramPro
             new Thread(() =>
                     {
                         makeFile();
+                        makeFileScraper();
                     }).Start();
-
 
             //Draw Image in Tab Controls..
             Bacgroundimage = Properties.Resources.Bacground;
@@ -184,6 +179,7 @@ namespace DemoStagramPro
             //tab_instagram.TabPages.Remove(tabPage4);
             //tab_instagram.TabPages.Remove(tabPage5);
             //tab_instagram.TabPages.Remove(tabPage7);
+             tab_instagram.TabPages.Remove(tabPage8);//tabPage8
 
             #region Event Methods Subscription
             DemoStagramPro.Classes.HashTag.loggerHashTag.addToLogger += new EventHandler(HashTagLogEvents_addToLogger);
@@ -243,10 +239,10 @@ namespace DemoStagramPro
                         DataRow newdr = NewDt2.NewRow();
                         string Username = item["Username"].ToString();
                         string Password = item["Password"].ToString();
-                        string proxyAddress = item["proxyAddress"].ToString();
-                        string proxyPort = item["proxyPort"].ToString();
-                        string proxyUsername = item["proxyUsername"].ToString();
-                        string proxyPassword = item["proxyPassword"].ToString();
+                        string proxyAddress = item["IPAddress"].ToString();
+                        string proxyPort = item["IPPort"].ToString();
+                        string proxyUsername = item["IPUsername"].ToString();
+                        string proxyPassword = item["IPPassword"].ToString();
                         string Path = item["Path"].ToString();
 
 
@@ -254,10 +250,10 @@ namespace DemoStagramPro
 
                         newdr["Username"] = Username;
                         newdr["Password"] = Password;
-                        newdr["proxyAddress"] = proxyAddress;
-                        newdr["proxyPort"] = proxyPort;
-                        newdr["proxyUsername"] = proxyUsername;
-                        newdr["proxyPassword"] = proxyPassword;
+                        newdr["IPAddress"] = proxyAddress;
+                        newdr["IPPort"] = proxyPort;
+                        newdr["IPUsername"] = proxyUsername;
+                        newdr["IPPassword"] = proxyPassword;
                         newdr["Path"] = Path;
 
 
@@ -346,6 +342,8 @@ namespace DemoStagramPro
             }
         }
         public static string filepath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\Gram BoardPro\\Downloaded_Image";
+        public static string filepathScraper = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\Gram BoardPro\\Scrape_Followers";
+        public static string CSVPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\Gram BoardPro\\Scrape_Followers\\";
         public void makeFile()
         {
             //Make Folder 
@@ -366,11 +364,34 @@ namespace DemoStagramPro
             }
         }
 
+        public void makeFileScraper()
+        {
+            //Make Folder 
+            try
+            {
+                if (!Directory.Exists(GlobusFileHelper.path_AppDataFolder))
+                {
+                    Directory.CreateDirectory(GlobusFileHelper.path_AppDataFolder);
+                }
+                if (!Directory.Exists(filepathScraper))
+                {
+                    Directory.CreateDirectory(filepathScraper);
+                }
+
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+
+
+
         public void CopyDatabase()                                                 //*--------Copy DataBase method--------*//
         {
-            string startUpDB = System.Windows.Forms.Application.StartupPath + "\\Instagram.db";
-            string localAppDataDB = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\InstagramDB\\Instagram.db";
-            string startUpDB64 = Environment.GetEnvironmentVariable("ProgramFiles(x86)") + "\\Instagram.db";
+            string startUpDB = System.Windows.Forms.Application.StartupPath + "\\GramBoardPro.db";
+            string localAppDataDB = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\GramBoardPro\\GramBoardPro.db";
+            string startUpDB64 = Environment.GetEnvironmentVariable("ProgramFiles(x86)") + "\\GramBoardPro.db";
 
 
             if (!File.Exists(localAppDataDB))
@@ -379,14 +400,14 @@ namespace DemoStagramPro
                 {
                     try
                     {
-                        Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\InstagramDB");
+                        Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\GramBoardPro");
                         File.Copy(startUpDB, localAppDataDB);
                     }
                     catch (Exception ex)
                     {
                         if (ex.Message.Contains("Could not find a part of the path"))
                         {
-                            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\InstagramDB");
+                            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\GramBoardPro");
                             File.Copy(startUpDB, localAppDataDB);
                         }
                     }
@@ -401,7 +422,7 @@ namespace DemoStagramPro
                     {
                         if (ex.Message.Contains("Could not find a part of the path"))
                         {
-                            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Instagram.db");
+                            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\GramBoardPro.db");
                             File.Copy(startUpDB64, localAppDataDB);
                         }
                     }
@@ -409,7 +430,7 @@ namespace DemoStagramPro
             }
         }
 
-        private void loadAccount()
+        public void loadAccount()
         {
 
             string path = string.Empty;
@@ -684,6 +705,13 @@ namespace DemoStagramPro
                     {
                         username = arr[0];
                         password = arr[1];
+                    }
+                    else if (arr.Length == 4)
+                    {
+                        username = arr[0];
+                        password = arr[1];
+                        proxyAddress = arr[2];
+                        proxyPort = arr[3];
                     }
                     else if (arr.Length == 6)
                     {
@@ -1247,7 +1275,7 @@ namespace DemoStagramPro
                     try
                     {
                         InstagramManager.Classes.InstagramAccountManager InstagramAccountManager = new InstagramManager.Classes.InstagramAccountManager(account, pass, proxyadd, proxyport, "", "");
-                        AddToLogger("[ " + DateTime.Now + " ] => [ Logging In With :" + InstagramAccountManager.Username + " ]");
+                       // AddToLogger("[ " + DateTime.Now + " ] => [ Logging In With :" + InstagramAccountManager.Username + " ]");
                         string status = InstagramAccountManager.MyLoginandComment(ref InstagramAccountManager.httpHelper, "", "", "");
                         if (status.Contains("Stream was not readable"))
                         {
@@ -1255,47 +1283,47 @@ namespace DemoStagramPro
                         }
                         if (InstagramAccountManager.LoggedIn == true)
                         {
-                            AddToLogger("[ " + DateTime.Now + " ] => [ Logged In success with " + InstagramAccountManager.Username + " ]");
-                            AddToLogger("[ " + DateTime.Now + " ] => [ Starting Follow With : " + InstagramAccountManager.Username + " ]");
+                            //AddToLogger("[ " + DateTime.Now + " ] => [ Logged In success with " + InstagramAccountManager.Username + " ]");
+                            //AddToLogger("[ " + DateTime.Now + " ] => [ Starting Follow With : " + InstagramAccountManager.Username + " ]");
                             getFollow(ref InstagramAccountManager, TargetedUser);
                         }
                         else if (status.Contains("Failed"))
                         {
-                            AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " Failed To Login ]");
+                           // AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " Failed To Login ]");
                         }
                         else if (status.Contains("AccessIssue"))
                         {
-                            AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " Access Issue In Login ]");
+                           // AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " Access Issue In Login ]");
                         }
 
                         else if (status.Contains("The request was aborted: The operation has timed out."))
                         {
 
-                            AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " Operation timed Out To Slow Request ]");
+                            //AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " Operation timed Out To Slow Request ]");
 
                         }
                         else if (status.Contains("503"))
                         {
 
-                            AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " Failed To Login ]");
+                            //AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " Failed To Login ]");
                         }
                         else if (status.Contains("403"))
                         {
 
-                            AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " Failed To Login ]");
+                           // AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " Failed To Login ]");
 
                         }
                         else if (status.Contains("Please enter a correct username and password."))
                         {
-                            AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " : Incorect Username Or Password ]");
+                           // AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " : Incorect Username Or Password ]");
                         }
                         else if (status.Contains("Please enter a correct username and password."))
                         {
-                            AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " : Incorect Username Or Password ]");
+                            //AddToLogger("[ " + DateTime.Now + " ] => [ " + account + " : Incorect Username Or Password ]");
                         }
                         else
                         {
-                            AddToLogger("[ " + DateTime.Now + " ] => [ Could Not Login With :" + InstagramAccountManager.Username + " ]");
+                            //AddToLogger("[ " + DateTime.Now + " ] => [ Could Not Login With :" + InstagramAccountManager.Username + " ]");
                         }
 
                     }
@@ -1371,29 +1399,29 @@ namespace DemoStagramPro
                         }
 
                         InstagramManager.Classes.InstagramAccountManager InstagramAccountManager = new InstagramManager.Classes.InstagramAccountManager(account, pass, proxyadd, proxyport, proxyUser, proxyPass);
-                        AddToLogger("[ " + DateTime.Now + " ] => [ Logging In From Account : " + account + " ]");
+                       // AddToLogger("[ " + DateTime.Now + " ] => [ Logging In From Account : " + account + " ]");
 
                         // string statuse = InstagramAccountManager.MyLoginandComment(ref InstagramAccountManager.httpHelper, "", "", "");
                         string statuse = InstagramAccountManager.Login();
 
                         if (statuse == "Failed")
                         {
-                            AddToLogger("[ " + DateTime.Now + " ] => [ Login failed For : " + account + " ]");
+                            //AddToLogger("[ " + DateTime.Now + " ] => [ Login failed For : " + account + " ]");
                             GramBoardProFileHelper.AppendStringToTextfileNewLine(account + ":" + pass + ":" + proxyadd + ":" + proxyport + ":" + proxyUser + ":" + proxyPass, GramBoardProFileHelper.FailedAccounts);
                         }
                         else if (statuse == "AccessIssue")
                         {
-                            AddToLogger("[ " + DateTime.Now + " ] => [ Access Issue For : " + account + " ]");
+                          //  AddToLogger("[ " + DateTime.Now + " ] => [ Access Issue For : " + account + " ]");
                             GramBoardProFileHelper.AppendStringToTextfileNewLine(account + ":" + pass + ":" + proxyadd + ":" + proxyport + ":" + proxyUser + ":" + proxyPass, GramBoardProFileHelper.AccessIssuesAccounts);
                         }
                         else if (statuse == "Success")
                         {
-                            AddToLogger("[ " + DateTime.Now + " ] => [ Login Successfull : " + account + " ]");
+                           // AddToLogger("[ " + DateTime.Now + " ] => [ Login Successfull : " + account + " ]");
                             GramBoardProFileHelper.AppendStringToTextfileNewLine(account + ":" + pass + ":" + proxyadd + ":" + proxyport + ":" + proxyUser + ":" + proxyPass, GramBoardProFileHelper.successfullyLoggedaccounts);
                         }
                         else if (statuse == "Stream was not readable.")
                         {
-                            AddToLogger("[ " + DateTime.Now + " ] => [ Could Not Login With " + account + " ]");
+                           // AddToLogger("[ " + DateTime.Now + " ] => [ Could Not Login With " + account + " ]");
                             GramBoardProFileHelper.AppendStringToTextfileNewLine(account + ":" + pass + ":" + proxyadd + ":" + proxyport + ":" + proxyUser + ":" + proxyPass, GramBoardProFileHelper.PostRequesterror);
                         }
                     }
@@ -1428,7 +1456,7 @@ namespace DemoStagramPro
                 if (acc_checker_counter == 0)
                 {
                     AddToLogger("-----------------------------------------------------------------------------------------------");
-                    AddToLogger("[ " + DateTime.Now + " ] => [ PROCESS COMPLETED ]");
+                   // AddToLogger("[ " + DateTime.Now + " ] => [ PROCESS COMPLETED ]");
                     AddToLogger("-----------------------------------------------------------------------------------------------");
                 }
 
@@ -1479,7 +1507,7 @@ namespace DemoStagramPro
                         }
 
                         InstagramManager.Classes.InstagramAccountManager InstagramAccountManager = new InstagramManager.Classes.InstagramAccountManager(account, pass, proxyadd, proxyport, proxyUser, proxyPass);
-                        AddToLogger1("[ " + DateTime.Now + " ] => [ Logging In From Account : " + account + " ]");
+                       // AddToLogger1("[ " + DateTime.Now + " ] => [ Logging In From Account : " + account + " ]");
 
                         // string statuse = InstagramAccountManager.MyLoginandComment(ref InstagramAccountManager.httpHelper, "", "", "");
                         string statuse = InstagramAccountManager.Login();
@@ -1496,7 +1524,7 @@ namespace DemoStagramPro
                         }
                         else if (statuse == "Success")
                         {
-                            AddToLogger1("[ " + DateTime.Now + " ] => [ Login Successfull : " + account + " ]");
+                            //AddToLogger1("[ " + DateTime.Now + " ] => [ Login Successfull : " + account + " ]");
                             GramBoardProFileHelper.AppendStringToTextfileNewLine(account + ":" + pass + ":" + proxyadd + ":" + proxyport + ":" + proxyUser + ":" + proxyPass, GramBoardProFileHelper.successfullyLoggedaccounts);
                         }
                         else if (statuse == "Stream was not readable.")
@@ -1600,6 +1628,7 @@ namespace DemoStagramPro
                                 ClGlobul.TotalNoOfFollow++;
 
                                 AddToLogger("[ " + DateTime.Now + " ] => [" + accountManager.Username + " Followed " + FollowerName + " ]");
+                              
                                 if (!string.IsNullOrEmpty(txtmindelay.Text) && NumberHelper.ValidateNumber(txtmindelay.Text))
                                 {
                                     mindelay = Convert.ToInt32(txtmindelay.Text);
@@ -1610,7 +1639,9 @@ namespace DemoStagramPro
                                 }
                                 lock (_lockObject)
                                 {
+                                    Random rn = new Random();
                                     int delay = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
+                                    delay = rn.Next(mindelay, maxdelay);
                                     AddToLogger("[ " + DateTime.Now + " ] => [ Delay For " + delay + " Seconds ]");
                                     Thread.Sleep(delay * 1000);
                                 }
@@ -1621,9 +1652,6 @@ namespace DemoStagramPro
                                     GramBoardProFileHelper.AppendStringToTextfileNewLine("Followed: " + FollowerName + " By: " + accountManager.Username + ":" + accountManager.Password, GramBoardProFileHelper.FollowIDFilePath);
                                 }
                             }
-
-
-
                             else if (Result == "private")
                             {
                                 AddToLogger("[ " + DateTime.Now + " ] => [ Followed: " + FollowerName + " is a private user and can not be followed. ]");
@@ -1631,8 +1659,31 @@ namespace DemoStagramPro
                             }
                             else if (Result == "Already Followed")
                             {
+
                                 ClGlobul.TotalNoOfFollow++;
-                                AddToLogger("[ " + DateTime.Now + " ] => [ Account:" + accountManager.Username + ClGlobul.TotalNoOfFollow + " Already Followed " + FollowerName + " ]");
+                                AddToLogger("[ " + DateTime.Now + " ] => [ Account:" + accountManager.Username + ClGlobul.TotalNoOfFollow + " Followed " + FollowerName + " ]");
+                                if (!string.IsNullOrEmpty(txtmindelay.Text) && NumberHelper.ValidateNumber(txtmindelay.Text))
+                                {
+                                    mindelay = Convert.ToInt32(txtmindelay.Text);
+                                }
+                                if (!string.IsNullOrEmpty(txtmaxdelay.Text) && NumberHelper.ValidateNumber(txtmaxdelay.Text))
+                                {
+                                    maxdelay = Convert.ToInt32(txtmaxdelay.Text);
+                                }
+                                lock (_lockObject)
+                                {
+                                    Random rn = new Random();
+                                    int delay = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
+                                    delay = rn.Next(mindelay, maxdelay);
+                                    AddToLogger("[ " + DateTime.Now + " ] => [ Delay For " + delay + " Seconds ]");
+                                    Thread.Sleep(delay * 1000);
+                                }
+
+                                if (!Followedlist.Contains(accountManager.Username))
+                                {
+                                    Followedlist.Add(accountManager.Username);
+                                    GramBoardProFileHelper.AppendStringToTextfileNewLine("Followed: " + FollowerName + " By: " + accountManager.Username + ":" + accountManager.Password, GramBoardProFileHelper.FollowIDFilePath);
+                                }
 
                                 if (!AlreadyFollowedlist.Contains(accountManager.Username))
                                 {
@@ -1658,17 +1709,6 @@ namespace DemoStagramPro
                                     GramBoardProFileHelper.AppendStringToTextfileNewLine(accountManager.Username + ":" + accountManager.Password, GramBoardProFileHelper.UnFollowIdFilePath);
                                 }
                             }
-
-                            lock (_lockObject)
-                            {
-                                //int delay = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
-
-                                //AddToLogger("[ " + DateTime.Now + " ] => [ Delay For " + delay + " Seconds ]");
-
-                                //_boolAddToLogger = true;
-                                //Thread.Sleep(delay * 1000);
-                                //_boolAddToLogger = false;
-                            }
                         }
                         catch (Exception ex)
                         {
@@ -1677,9 +1717,6 @@ namespace DemoStagramPro
                             GramBoardProFileHelper.AppendStringToTextfileNewLine("-----------------------------------------------------------------------------------------------", GramBoardProFileHelper.ErrorLogFilePath);
                         }
                     }
-
-
-
                 }
 
                 else
@@ -1687,9 +1724,6 @@ namespace DemoStagramPro
                     GramBoardProFileHelper.AppendStringToTextfileNewLine("Methode Name => GetFollow2 :=> ", GramBoardProFileHelper.ErrorLogFilePath);
                     AddToLogger("[ " + DateTime.Now + " ] => [ Please upload Following ID's ]");
                 }
-
-
-
             }
             catch (Exception ex)
             {
@@ -1729,15 +1763,11 @@ namespace DemoStagramPro
                 }
             }
         }
-
-
         private void btn_addProxy_Click(object sender, EventArgs e)
         {
             Frm_proxy frm_proxy = new Frm_proxy();
             frm_proxy.Show();
         }
-
-
         private void AddToLogger(string log)
         {
             while (_boolAddToLogger)
@@ -1751,7 +1781,6 @@ namespace DemoStagramPro
                 lbLogger.SelectedIndex = lbLogger.Items.Count - 1;
             }));
         }
-
         private void AddToLogger1(string log)
         {
             while (_boolAddToLogger)
@@ -1765,9 +1794,6 @@ namespace DemoStagramPro
                 lbLogger1.SelectedIndex = lbLogger1.Items.Count - 1;
             }));
         }
-
-
-
         private void btn_followingFile_Click(object sender, EventArgs e)
         {
 
@@ -1813,8 +1839,6 @@ namespace DemoStagramPro
 
             AddToLogger("[ " + DateTime.Now + " ] => [ " + ClGlobul.followingList.Count + " followingList Loaded ]");
         }
-
-
         private void btn_clearAccounts_Click(object sender, EventArgs e)
         {
             try
@@ -1837,8 +1861,6 @@ namespace DemoStagramPro
                 GramBoardProFileHelper.AppendStringToTextfileNewLine(DateTime.Now + ":=> Methode Name => Finally (clearAccounts) :=> " + ex.Message, GramBoardProFileHelper.ErrorLogFilePath);
             }
         }
-
-
         private void btn_notfollow_Click(object sender, EventArgs e)
         {
             ClGlobul.FolloConpletedList = ClGlobul.FolloConpletedList.Distinct().ToList();
@@ -1861,8 +1883,6 @@ namespace DemoStagramPro
                 AddTophotoLogger("[ " + DateTime.Now + " ] => [  Plase wait for Finishing Follow Process. ]");
             }
         }
-
-
         #endregion
 
         //********************************************* Photo Like Codes *******************************************************************************//
@@ -1893,9 +1913,6 @@ namespace DemoStagramPro
                 GramBoardProFileHelper.AppendStringToTextfileNewLine("------------------------------------------------------------------------", GramBoardProFileHelper.ErrorLogFilePathForPhotolike);
             }
         }
-
-
-
         public void ReadLargePhotoFile(string photoFilename)
         {
             ClGlobul.PhotoList.Clear();
@@ -1918,8 +1935,6 @@ namespace DemoStagramPro
                 GramBoardProFileHelper.AppendStringToTextfileNewLine("------------------------------------------------------------------------", GramBoardProFileHelper.ErrorLogFilePathForPhotolike);
             }
         }
-
-
         private void btn_starteLike_Click(object sender, EventArgs e)
         {
             try
@@ -1932,10 +1947,6 @@ namespace DemoStagramPro
                 }
             }
             catch { };
-
-
-
-
             try
             {
 
@@ -2246,26 +2257,26 @@ namespace DemoStagramPro
 
                         if (InstagramAccountManager.LoggedIn == true)
                         {
-                            AddTophotoLogger("[ " + DateTime.Now + " ] => [ Logged In From : " + InstagramAccountManager.Username + " ]");
-                            AddTophotoLogger("[ " + DateTime.Now + " ] => [ Starting Photo Like From : " + InstagramAccountManager.Username + " ]");
+                           // AddTophotoLogger("[ " + DateTime.Now + " ] => [ Logged In From : " + InstagramAccountManager.Username + " ]");
+                           // AddTophotoLogger("[ " + DateTime.Now + " ] => [ Starting Photo Like From : " + InstagramAccountManager.Username + " ]");
                             getPhotoLike(ref InstagramAccountManager);
 
                         }
 
                         else if (status.Contains("Failed"))
                         {
-                            AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
+                            //AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
 
                         }
                         else if (status.Contains("AccessIssue"))
                         {
-                            AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
+                          //  AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
 
                         }
                         else if (status.Contains("Stream was not readable."))
                         {
 
-                            AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
+                            //AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
                             try
                             {
                                 string removeingProxy = ClGlobul.finalProxyList.Where(e => e.Contains(ProxyValue)).ToArray()[0];
@@ -2277,20 +2288,20 @@ namespace DemoStagramPro
                         else if (status.Contains("The request was aborted: The operation has timed out."))
                         {
 
-                            AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
+                          //  AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
 
                         }
                         else if (status.Contains("503"))
                         {
-                            AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
+                           // AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
                         }
                         else if (status.Contains("403"))
                         {
-                            AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
+                          //  AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
                         }
                         else
                         {
-                            AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
+                           // AddTophotoLogger("[ " + DateTime.Now + " ] => [ Failed To Login From : " + InstagramAccountManager.Username + " ]");
 
                         }
                     }
@@ -2442,7 +2453,9 @@ namespace DemoStagramPro
 
                             lock (_lockObject)
                             {
+                                Random rn = new Random();
                                 int delay = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
+                                delay = rn.Next(mindelay,maxdelay);
                                 AddTophotoLogger("[ " + DateTime.Now + " ] => [ Delay For " + delay + " Seconds For " + accountManager.Username + " ]");
                                 Thread.Sleep(delay * 1000);
                             }
@@ -2525,13 +2538,23 @@ namespace DemoStagramPro
         private static bool _boolUnlike = false;
         private void btn_NotLikes_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(txt_photoListPath.Text) && string.IsNullOrEmpty(txtphotosingaluser.Text))
+            {
+                MessageBox.Show("Please Upload  a Photo Id First");
+                return;
+            }
+            if (!string.IsNullOrEmpty(txtphotosingaluser.Text) && string.IsNullOrEmpty(txt_photoListPath.Text))
+            {
+                ClGlobul.PhotoList.Clear();
+                ClGlobul.PhotoList.Add(txtphotosingaluser.Text);
+            }
             try
             {
-                if (string.IsNullOrEmpty(txt_photoListPath.Text))
-                {
-                    MessageBox.Show("Please Upload a Photo Id First");
-                    return;
-                }
+                //if (string.IsNullOrEmpty(txt_photoListPath.Text))
+                //{
+                //    MessageBox.Show("Please Upload a Photo Id First");
+                //    return;
+                //}
             }
             catch { };
 
@@ -2573,6 +2596,31 @@ namespace DemoStagramPro
                 AddToCommentLogger("[ " + DateTime.Now + " ] => [ This is a number only field ]");
                 return;
             }
+
+
+            if (!string.IsNullOrEmpty(txtphotosingaluser.Text.Trim()))
+            {
+                //add following in followingList...
+                lstStoreDownloadImageKeyword.Clear();
+
+                string s = txtphotosingaluser.Text.ToString();
+
+                if (s.Contains(','))
+                {
+                    string[] Data = s.Split(',');
+
+                    foreach (var item in Data)
+                    {
+
+
+                        ClGlobul.PhotoList.Add(item);
+                    }
+                }
+                else
+                {
+                    ClGlobul.PhotoList.Add(txtphotosingaluser.Text.ToString());
+                }
+            }
             bool ProcessStartORnot = false;
 
             if (ClGlobul.accountList.Count > 0)
@@ -2588,12 +2636,11 @@ namespace DemoStagramPro
                     {
                         ThreadPool.QueueUserWorkItem(new WaitCallback(unlike), new object[] { accounts });
                     }
-
                 }
-                else
-                {
-                    AddTophotoLogger("[ " + DateTime.Now + " ] => [ Please upload Photo Ids. ]");
-                }
+                //else
+                //{
+                //    AddTophotoLogger("[ " + DateTime.Now + " ] => [ Please upload Photo Ids. ]");
+                //}
             }
             else
             {
@@ -2802,7 +2849,9 @@ namespace DemoStagramPro
 
                         lock (_lockObject)
                         {
+                            Random rn = new Random();
                             int delay = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
+                            delay = rn.Next(mindelay,maxdelay);
                             AddTophotoLogger("[ " + DateTime.Now + " ] => [ Delay For " + delay + " Seconds For " + accountManager.Username + " ]");
                             Thread.Sleep(delay * 1000);
                         }
@@ -3169,6 +3218,58 @@ namespace DemoStagramPro
                                 }
                             }
                         }
+
+
+                        else if (!string.IsNullOrEmpty(txtsingalmsg.Text.Trim()) && string.IsNullOrEmpty(txt_UploadedFilepath.Text.Trim()))//txtsingalmsg
+                        {
+                            ClGlobul.commentMsgList.Clear();
+                            if (string.IsNullOrEmpty(txt_NoOfCommentThread.Text.Trim()))
+                            {
+                                if (MessageBox.Show("Do you really want to Start Without Thread", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)  //txtsingalmsg
+                                {
+
+                                    ProcessStartORnot = true;
+                                    ClGlobul.NoOfcommentThread = 1;
+                                    try
+                                    {
+                                        string AllMessege = txtsingalmsg.Text.Trim();
+                                        string[] ListMessages = Regex.Split(AllMessege, ",");
+                                        foreach (string str in ListMessages)
+                                        {
+                                            ClGlobul.commentMsgList.Add(str);
+                                        }
+                                    }
+                                    catch { };
+                                }
+                                else
+                                {
+                                }
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    ClGlobul.NoOfcommentThread = Convert.ToInt16(txt_NoOfCommentThread.Text.Trim());  // ClGlobul.commentMsgList = ClGlobul.commentMsgList.Distinct().ToList();
+                                    ProcessStartORnot = true;
+                                    try
+                                    {
+                                        string AllMessege = txtsingalmsg.Text.Trim();
+                                        string[] ListMessages = Regex.Split(AllMessege, ",");
+                                        foreach (string str in ListMessages)
+                                        {
+                                            ClGlobul.commentMsgList.Add(str);
+                                        }
+                                    }
+                                    catch { };
+                                    //  ClGlobul.commentMsgList.Add(txtsingalmsg.Text.Trim());
+                                }
+                                catch (Exception)
+                                {
+                                    MessageBox.Show("Please Enter Numeric Value in Comment Thread..!!", "Wrong Value Insert In Commnet Thread");
+                                }
+                            }
+                        }
+
                         else
                         {
                             AddToCommentLogger("[ " + DateTime.Now + " ] => [ Please upload Comments. ]");
@@ -3176,6 +3277,8 @@ namespace DemoStagramPro
                         }
 
                     }
+
+
                     else
                     {
                         AddToCommentLogger("[ " + DateTime.Now + " ] => [ Please upload Comment Id's . ]");
@@ -3189,15 +3292,6 @@ namespace DemoStagramPro
                     MessageBox.Show("Please Upload Accounts.", "Please Upload Accounts.");
                     tab_instagram.SelectedIndex = 0;
                 }
-
-                //if (ClGlobul.ProxyList.Count == 0)
-                //{
-                //    AddToCommentLogger("Please Upload Proxies.");
-                //    MessageBox.Show("Please Upload Accounts & Proxies.", "Please Upload Required File.");
-                //    tab_instagram.SelectedIndex = 0;
-                //}
-                //else
-                //{
 
                 if (ProcessStartORnot)
                 {
@@ -3238,8 +3332,8 @@ namespace DemoStagramPro
                 List<string> tempMSGList = new List<string>();
                 if (ClGlobul.CommentIdsForMSG.Count > ClGlobul.commentMsgList.Count)
                 {
-                    if (MessageBox.Show("You have uploaded less messages,Do you want to repeat messages? ", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                    {
+                    //if (MessageBox.Show("You have uploaded less messages,Do you want to repeat messages? ", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    //{
                         try
                         {
                             AddToCommentLogger("[ " + DateTime.Now + " ] => [ we are storing messages in list. Please wait for next process. ]");
@@ -3278,7 +3372,7 @@ namespace DemoStagramPro
                             GramBoardProFileHelper.AppendStringToTextfileNewLine(DateTime.Now + ":=> Methode Name => logInAccountsForcomment :=> " + ex.Message, GramBoardProFileHelper.ErrorLogFilePathForComment);
                             GramBoardProFileHelper.AppendStringToTextfileNewLine("-----------------------------------------------------------------------------------------------", GramBoardProFileHelper.ErrorLogFilePathForComment);
                         }
-                    }
+                   // }
                     AddToCommentLogger("[ " + DateTime.Now + " ] => [ Next Process is continue. ]");
                 }
 
@@ -4279,7 +4373,7 @@ namespace DemoStagramPro
             if (ClGlobul.accountList.Count() == 0)
             {
                 MessageBox.Show("Please upload the accounts !");
-                AddToLogger1("[ " + DateTime.Now + " ] => [ Please upload the accounts ! ]");
+               // AddToLogger1("[ " + DateTime.Now + " ] => [ Please upload the accounts ! ]");
                 return;
             }
 
@@ -4311,7 +4405,7 @@ namespace DemoStagramPro
         {
             try
             {
-                AddToLogger1("[ " + DateTime.Now + " ] => [ Starting Process For Account Checker ]");
+                //AddToLogger1("[ " + DateTime.Now + " ] => [ Starting Process For Account Checker ]");
 
                 if (ClGlobul.ProxyQueue.Count == 0)
                 {
@@ -4355,7 +4449,7 @@ namespace DemoStagramPro
         {
             try
             {
-                AddToLogger("[ " + DateTime.Now + " ] => [ Starting Process For Account Checker ]");
+               // AddToLogger("[ " + DateTime.Now + " ] => [ Starting Process For Account Checker ]");
 
                 if (ClGlobul.ProxyQueue.Count == 0)
                 {
@@ -4430,7 +4524,7 @@ namespace DemoStagramPro
                         {
                             if (ClGlobul.finalProxyList.Count == 0)
                             {
-                                AddToLogger("[ " + DateTime.Now + " ] => [ Waiting For Proxies To Be Loaded ]");
+                               // AddToLogger("[ " + DateTime.Now + " ] => [ Waiting For Proxies To Be Loaded ]");
                                 Monitor.Wait(StagramProxyChecker.classes.ClProxyChecker.locker_finalProxyList);
                             }
                         }
@@ -5038,7 +5132,7 @@ namespace DemoStagramPro
         
         private void btnImageStart_Click(object sender, EventArgs e)
         {
-
+            List<string> imageloardcount = new List<string>();
             int Status = 1;
             bool NoOfCount = int.TryParse(txtcountImageScraper.Text.Trim(), out Status);
             if (NoOfCount)
@@ -5054,7 +5148,7 @@ namespace DemoStagramPro
 
             try
             {
-                if (string.IsNullOrEmpty(txtUploadImage.Text) && string.IsNullOrEmpty(txtDelayImage.Text) && string.IsNullOrEmpty(txtuserimagescraper.Text))
+                if (string.IsNullOrEmpty(txtUploadImage.Text) && string.IsNullOrEmpty(txtmaxDelayGetImageImage.Text) && string.IsNullOrEmpty(txtuserimagescraper.Text))
                 {
                     MessageBox.Show("Please Upload a # Tag File and Delay");
                     return;
@@ -5064,7 +5158,7 @@ namespace DemoStagramPro
 
 
             int parsedValue;
-            if (!int.TryParse(txtDelayImage.Text, out parsedValue))
+            if (!int.TryParse(txtmaxDelayGetImageImage.Text, out parsedValue))
             {
                 AddToImageTagLogger("[ " + DateTime.Now + " ] => [ This is a number only field  ]");
 
@@ -5095,21 +5189,19 @@ namespace DemoStagramPro
 
             }
 
-
-
             bool ProcessStartORnot = false;
 
             if (ClGlobul.ImageTagForScrap.Count > 0)
             {
-                if (!string.IsNullOrEmpty(txtDelayImage.Text.ToString()))
+                if (!string.IsNullOrEmpty(txtmaxDelayGetImageImage.Text.ToString()))
                 {
-                    if (NumberHelper.ValidateNumber(txtDelayImage.Text.ToString()))
+                    if (NumberHelper.ValidateNumber(txtmaxDelayGetImageImage.Text.ToString()))
                     {
                         AddToImageTagLogger("[ " + DateTime.Now + " ] => [ Scraping Started for Image Urls ]");
                         try
                         {
                             _boolCanStop = true;
-                            Thread _ThreadImageStart = new Thread(() => new ScrapImages().DownloadingImage(Convert.ToInt32(txtDelayImage.Text.ToString())));
+                            Thread _ThreadImageStart = new Thread(() => new ScrapImages().DownloadingImage(Convert.ToInt32(txtmaxDelayGetImageImage.Text.ToString())));
                             _ThreadImageStart.Start();
                         }
                         catch (Exception ex)
@@ -5412,7 +5504,7 @@ namespace DemoStagramPro
 
                         InstagramManager.Classes.InstagramAccountManager InstagramAccountManager = new InstagramManager.Classes.InstagramAccountManager(userName, password, proxyAddress, ProxyPort, "", "");
                         if (_boolStopUnfollow) return;
-                        AddToUnfollowLogger("[ " + DateTime.Now + " ] => [ Logging In With :" + InstagramAccountManager.Username + " ]");
+                        //AddToUnfollowLogger("[ " + DateTime.Now + " ] => [ Logging In With :" + InstagramAccountManager.Username + " ]");
                         //string statuse = InstagramAccountManager.Login();
                         string statuse = InstagramAccountManager.MyLoginForUnfollow(ref InstagramAccountManager.httpHelper, "", "", "");
                         if (InstagramAccountManager.LoggedIn == true)
@@ -5494,18 +5586,30 @@ namespace DemoStagramPro
                 GramBoardProFileHelper.AppendStringToTextfileNewLine("-----------------------------------------------------------------------------------------------", GramBoardProFileHelper.ErrorLogFilePathForComment);
             }
 
-            if (lstFollowFromDatabase.Count > 0)
+
+            if (lstFollowFromDatabase.Count >= 0)
             {
-                if (lstToUnfollow.Count > 0)
+                if (lstToUnfollow.Count >= 0)
                 {
                     int count = 0;
                     foreach (string item in lstFollowFromDatabase)
                     {
+                        string itemCopy = "";
                         try
                         {
-                            if (lstToUnfollow.Contains(item))
+                            if (item.Contains("http://websta.me/n/"))
                             {
-                                unfollowAccount(ref accountManager, item);
+                                itemCopy = getBetween(item, "http://websta.me/n/", "/");
+
+                            }
+
+                            if (lstToUnfollow.Contains(itemCopy))//lstToUnfollow
+                            {
+                                try
+                                {
+                                    unfollowAccount(ref accountManager, item);
+                                }
+                                catch { };
                                 lock (_lockObject)
                                 {
                                     if (_boolStopUnfollow) return;
@@ -5519,9 +5623,9 @@ namespace DemoStagramPro
                         }
                         catch (Exception ex)
                         {
-                            GramBoardProFileHelper.AppendStringToTextfileNewLine("-----------------------------------------------------------------------------------------------", GramBoardProFileHelper.ErrorLogFilePathForComment);
-                            GramBoardProFileHelper.AppendStringToTextfileNewLine(DateTime.Now + ":=> Methode Name => unFollow :=> " + ex.Message, GramBoardProFileHelper.ErrorLogFilePathForComment);
-                            GramBoardProFileHelper.AppendStringToTextfileNewLine("-----------------------------------------------------------------------------------------------", GramBoardProFileHelper.ErrorLogFilePathForComment);
+                            //GlobusFileHelper.AppendStringToTextfileNewLine("-----------------------------------------------------------------------------------------------", GlobusFileHelper.ErrorLogFilePathForComment);
+                            //GlobusFileHelper.AppendStringToTextfileNewLine(DateTime.Now + ":=> Methode Name => unFollow :=> " + ex.Message, GlobusFileHelper.ErrorLogFilePathForComment);
+                            //GlobusFileHelper.AppendStringToTextfileNewLine("-----------------------------------------------------------------------------------------------", GlobusFileHelper.ErrorLogFilePathForComment);
                         }
                     }
                 }
@@ -5531,6 +5635,7 @@ namespace DemoStagramPro
                     AddToUnfollowLogger("[ " + DateTime.Now + " ] => [ No Accounts to Unfollow for " + accountManager.Username + " ]");
                 }
             }
+
 
             else
             {
@@ -5936,6 +6041,15 @@ namespace DemoStagramPro
             {
                 try
                 {
+                    UnfollowListListThread.Add(Thread.CurrentThread);
+                    UnfollowListListThread.Distinct();
+                    Thread.CurrentThread.IsBackground = true;
+                }
+                catch
+                {
+                }
+                try
+                {
 
                     pageSource = accountManager.httpHelper.getHtmlfromUrlProxy(new Uri(accountUrl + account), "", 80, "", "");
                 }
@@ -6246,7 +6360,9 @@ namespace DemoStagramPro
 
                             lock (_lockObject)
                             {
+                                Random rn = new Random();
                                 int delay = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
+                                delay = rn.Next(mindelay,maxdelay);
                                 AddToUnfollowLogger("[ " + DateTime.Now + " ] => [ Delay For " + delay + " Seconds ]");
                                 Thread.Sleep(delay * 1000);
                             }
@@ -6507,7 +6623,11 @@ namespace DemoStagramPro
                     }
                     else
                     {
-                        AddToHashLoggerDAta("[ " + DateTime.Now + " ] => [ " + itemHash + " is not Uploaded as Its not starting with # ]");
+
+                        string itemHashNew = itemHash;
+                        //add Comment Id's In Globol Comment Id List ...
+                        ClGlobul.HashLiker.Add(itemHashNew);
+                        //AddToHashLoggerDAta("[ " + DateTime.Now + " ] => [ " + itemHash + " is not Uploaded as Its not starting with # ]");
                     }
                 }
                 ClGlobul.HashLiker = ClGlobul.HashLiker.Distinct().ToList();
@@ -6533,6 +6653,11 @@ namespace DemoStagramPro
                 txtHashLike.Text = string.Empty;
                 txtHashComment.Text = string.Empty;
                 txtHashCommentMessage.Text = string.Empty;
+                txtNumberProfilesFollow.Text = string.Empty;
+                txtNumberPicsVideosLike.Text = string.Empty;
+                txtNumberSnapsVideosComment.Text = string.Empty;
+
+
 
 
 
@@ -6646,10 +6771,6 @@ namespace DemoStagramPro
             }
             catch
             { }
-
-
-
-
             if (chkDivideDataFollow1.Checked && rdbDivideGivenByUser1.Checked)
             {
                 if (!int.TryParse(txtDiveideByUser1.Text, out parsedValue))
@@ -6659,9 +6780,6 @@ namespace DemoStagramPro
                     return;
                 }
             }
-
-
-
             try
             {
                 if (ClGlobul.HashFollower.Count != 0)
@@ -6669,6 +6787,7 @@ namespace DemoStagramPro
                     if (!string.IsNullOrEmpty(txtNumberProfilesFollow.Text))
                     {
                         ClGlobul.NumberOfProfilesToFollow = Convert.ToInt32(txtNumberProfilesFollow.Text);
+                        //ClGlobul.SnapVideosCounterfollow = Convert.ToInt32(txtNumberProfilesFollow.Text) * ClGlobul.HashFollower.Count;
                     }
                     else
                     {
@@ -6677,14 +6796,12 @@ namespace DemoStagramPro
                         return;
                     }
                 }
-
-
-
                 if (ClGlobul.HashLiker.Count != 0)
                 {
                     if (!string.IsNullOrEmpty(txtNumberPicsVideosLike.Text))
                     {
                         ClGlobul.NumberofSnapsVideosToLike = Convert.ToInt32(txtNumberPicsVideosLike.Text);
+                        //ClGlobul.SnapVideosCounter = Convert.ToInt32(txtNumberPicsVideosLike.Text) * ClGlobul.HashLiker.Count;
                     }
                     else
                     {
@@ -6693,13 +6810,12 @@ namespace DemoStagramPro
                         return;
                     }
                 }
-
-
                 if (ClGlobul.HashComment.Count != 0)
                 {
                     if (!string.IsNullOrEmpty(txtNumberSnapsVideosComment.Text))
                     {
                         ClGlobul.NumberofSnapsVideosToComment = Convert.ToInt32(txtNumberSnapsVideosComment.Text);
+                       // ClGlobul.SnapVideosCounterComment = Convert.ToInt32(txtNumberSnapsVideosComment.Text) * ClGlobul.HashComment.Count;
                     }
                     else
                     {
@@ -6708,7 +6824,6 @@ namespace DemoStagramPro
                         return;
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -6751,9 +6866,6 @@ namespace DemoStagramPro
             }
             #endregion
 
-
-
-
             #region hashtagcomment
             List<string> lstHashTagUserIdCommentTemp = new List<string>();
             List<string> lstHashTagCommentUserId = new List<string>();
@@ -6772,9 +6884,6 @@ namespace DemoStagramPro
                 }
             }
             #endregion
-
-
-
             List<List<string>> list_lstTargetUsers = new List<List<string>>();
             counter_follow = DemoStagramPro.ClGlobul.accountList.Count();
             list_Accounts = ListUtilities.Split(DemoStagramPro.ClGlobul.accountList, Maxthread);
@@ -6879,6 +6988,23 @@ namespace DemoStagramPro
                     ClGlobul.countNoOFAccountHashFollower = ClGlobul.accountList.Count;
                     ClGlobul.countNoOFAccountHashComment = ClGlobul.accountList.Count;
                     ClGlobul.countNOOfFollowersandImageDownload = ClGlobul.accountList.Count;
+
+                    //try
+                    //{
+                    //    ClGlobul.SnapVideosCounterfollow = ClGlobul.SnapVideosCounterfollow * list_Accounts.Count;
+                    //}
+                    //catch { };
+                    //try
+                    //{
+                    //    ClGlobul.SnapVideosCounter = ClGlobul.SnapVideosCounter * list_Accounts.Count;
+                    //}
+                    //catch { };
+                    //try
+                    //{
+
+                    //    ClGlobul.SnapVideosCounterComment = ClGlobul.SnapVideosCounterComment * list_Accounts.Count;
+                    //}
+                    //catch { };
 
                     foreach (List<string> listAccounts in list_Accounts)
                     {
@@ -7084,10 +7210,10 @@ namespace DemoStagramPro
                 string url = "http://websta.me/search/" + hashTag.Replace("#", "%23");
                 GlobDramProHttpHelper objInstagramUser = new GlobDramProHttpHelper();
 
-                string pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url));
+                string pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url),"");
                 if (string.IsNullOrEmpty(pageSource))
                 {
-                    pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url));
+                    pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url),"");
                 }
 
                 if (!string.IsNullOrEmpty(pageSource))
@@ -7153,10 +7279,10 @@ namespace DemoStagramPro
             GlobDramProHttpHelper objInstagramUser = new GlobDramProHttpHelper();
             List<string> lstPhotoId = new List<string>();
 
-            string pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url));
+            string pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url),"");
             if (string.IsNullOrEmpty(pageSource))
             {
-                pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url));
+                pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url),"");
             }
             if (!string.IsNullOrEmpty(pageSource))
             {
@@ -7219,7 +7345,7 @@ namespace DemoStagramPro
 
                             if (!string.IsNullOrEmpty(pageLink))
                             {
-                                pageSource = objInstagramUser.getHtmlfromUrl(new Uri(pageLink));
+                                pageSource = objInstagramUser.getHtmlfromUrl(new Uri(pageLink),"");
                             }
 
                             if (pageSource.Contains("<ul class=\"pager\">") && pageSource.Contains("rel=\"next\">"))
@@ -7246,7 +7372,7 @@ namespace DemoStagramPro
                                         string response = string.Empty;
                                         try
                                         {
-                                            response = objInstagramUser.getHtmlfromUrl(new Uri(pageLink));
+                                            response = objInstagramUser.getHtmlfromUrl(new Uri(pageLink),"");
                                         }
                                         catch { }
                                         if (!string.IsNullOrEmpty(response))
@@ -7358,10 +7484,10 @@ namespace DemoStagramPro
             GlobDramProHttpHelper objInstagramUser = new GlobDramProHttpHelper();
             List<string> lstPhotoId = new List<string>();
 
-            string pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url));
+            string pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url),"");
             if (string.IsNullOrEmpty(pageSource))
             {
-                pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url));
+                pageSource = objInstagramUser.getHtmlfromUrl(new Uri(url),"");
             }
             if (!string.IsNullOrEmpty(pageSource))
             {
@@ -7434,7 +7560,7 @@ namespace DemoStagramPro
 
                             if (!string.IsNullOrEmpty(pageLink))
                             {
-                                pageSource = objInstagramUser.getHtmlfromUrl(new Uri(pageLink));
+                                pageSource = objInstagramUser.getHtmlfromUrl(new Uri(pageLink),"");
                             }
 
                             if (pageSource.Contains("<ul class=\"pager\">") && pageSource.Contains("rel=\"next\">"))
@@ -7461,7 +7587,7 @@ namespace DemoStagramPro
                                         string response = string.Empty;
                                         try
                                         {
-                                            response = objInstagramUser.getHtmlfromUrl(new Uri(pageLink));
+                                            response = objInstagramUser.getHtmlfromUrl(new Uri(pageLink),"");
                                         }
                                         catch { }
                                         if (!string.IsNullOrEmpty(response))
@@ -7704,16 +7830,17 @@ namespace DemoStagramPro
                 List<string> hashTaglist = GramBoardProFileHelper.ReadFile((string)HashTagFilePath);
                 foreach (string itemHash in hashTaglist)
                 {
-                    if (itemHash.ElementAt(0) == '#')
-                    {
-                        string itemHashNew = itemHash.Replace("#", "");
+                    //if (itemHash.ElementAt(0) == '#')
+                    //{
+                       // string itemHashNew = itemHash.Replace("#", "");
                         //add Comment Id's In Globol Comment Id List ...
-                        ClGlobul.HashCommentMessage.Add(itemHashNew);
-                    }
-                    else
-                    {
-                        AddToHashLoggerDAta("[ " + DateTime.Now + " ] => [ " + itemHash + " is not uploaded as Its not starting with # ]");
-                    }
+                    ClGlobul.HashCommentMessage.Add(itemHash);
+                   // }
+                    //else
+                    //{
+                    //    AddToHashLoggerDAta("[ " + DateTime.Now + " ] => [ " + itemHash + " is not uploaded as Its not starting with # ]");
+                    //}
+
                 }
                 ClGlobul.HashCommentMessage = ClGlobul.HashCommentMessage.Distinct().ToList();
                 //Show No Of Data Count In logger...
@@ -8106,13 +8233,13 @@ namespace DemoStagramPro
                 //ScrapeFollowingUrl(ref accountManager, usernameFollowingUrl, username);
 
                 #region ExportData
-                if (!ClGlobul.isStopScrapeFollowers)
-                {
-                    string filePath = GramBoardProFileHelper.path_AppDataFolder + "\\" + username;
-                    ExportData(filePath, username, "Follower");
-                    //MessageBox.Show("Follower Data Exported to CSV file with username : " + username + ".");
-                    AddToScrapeFollowersLogger("[ " + DateTime.Now + " ] => [ Follower Data Exported to CSV file with username : " + username + " ]");
-                }
+                //if (!ClGlobul.isStopScrapeFollowers)
+                //{
+                //    string filePath = GramBoardProFileHelper.path_AppDataFolder + "\\" + username;
+                //    ExportData(filePath, username, "Follower");
+                //    //MessageBox.Show("Follower Data Exported to CSV file with username : " + username + ".");
+                //    AddToScrapeFollowersLogger("[ " + DateTime.Now + " ] => [ Follower Data Exported to CSV file with username : " + username + " ]");
+                //}
 
                 #endregion
 
@@ -8239,12 +8366,12 @@ namespace DemoStagramPro
                 DataSet DS = DataBaseHandler.SelectQuery("select url from tb_follower_url where username ='" + username + "' and used='no'", "tb_follower_url");
                 if (DS.Tables[0].Rows.Count == 0)
                 {
-                    followerListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(usernameFollowerUrl));
+                    followerListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(usernameFollowerUrl),"");
                 }
                 else
                 {
                     usernameFollowerUrl = DS.Tables[0].Rows[0]["url"].ToString();
-                    followerListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(usernameFollowerUrl));
+                    followerListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(usernameFollowerUrl),"");
                     DataBaseHandler.UpdateQuery("update tb_follower_url set used='yes' where used='no'", "tb_follower_url");
                 }
 
@@ -8277,7 +8404,7 @@ namespace DemoStagramPro
                     string paginationUrl = "http://websta.me" + rawPaginationUrl;
 
 
-                    followerListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(paginationUrl));
+                    followerListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(paginationUrl),"");
                     rawFollowerList = getBetween(followerListPgSource, "<ul class=\"userlist\">", "</ul>");
                     followerListSplit = Regex.Split(rawFollowerList, "<li");
                     foreach (string item in followerListSplit)
@@ -8307,6 +8434,8 @@ namespace DemoStagramPro
                         paginationUrl = "http://websta.me" + rawPaginationUrl;
 
                         DataBaseHandler.InsertQuery("insert into tb_follower_url (url, username, used) values ('" + paginationUrl + "','" + username + "','" + "no" + "')", "tb_follower_url");
+
+
                     }
                     else
                     {
@@ -8361,16 +8490,16 @@ namespace DemoStagramPro
                 DataSet DS = DataBaseHandler.SelectQuery("select url from tb_following_url where username='" + username + "' and used='no'", "tb_following_url");
                 if (DS.Tables[0].Rows.Count == 0)
                 {
-                    followingListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(usernameFollowingUrl));
+                    followingListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(usernameFollowingUrl),"");
                 }
                 else
                 {
                     usernameFollowingUrl = DS.Tables[0].Rows[0]["url"].ToString();
-                    followingListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(usernameFollowingUrl));
+                    followingListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(usernameFollowingUrl),"");
                     DataBaseHandler.UpdateQuery("update tb_following_url set used='yes' where used='no'", "tb_following_url");
                 }
 
-                followingListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(usernameFollowingUrl));
+                followingListPgSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(usernameFollowingUrl),"");
                 string rawFollowingList = getBetween(followingListPgSource, "<ul class=\"userlist\">", "</ul>");
                 string[] followingListSplit = Regex.Split(rawFollowingList, "<li");
                 foreach (string item in followingListSplit)
@@ -8424,7 +8553,7 @@ namespace DemoStagramPro
             }
         }
 
-
+         private const string CSVHeader = "Username, Name, Follower count, Following count, Picture count, Day, Month, Year";
         public void ScrapeFollowerDetails(ref InstagramAccountManager accountManager, string followerUrl, string usernameFollowerUrl)
         {
             try
@@ -8464,9 +8593,15 @@ namespace DemoStagramPro
                     return;
                 }
 
-
+                string rawFollowerInfo = string.Empty;
                 AddToScrapeFollowersLogger("[ " + DateTime.Now + "] => " + "[ Scraping detail from profile with username-" + followerUsername + " ]");
-                string rawFollowerInfo = getBetween(followerPageSource, "<div class=\"userinfo\">", "</div>");
+                try
+                {
+                     rawFollowerInfo = getBetween(followerPageSource, "<div class=\"userinfo\">", "</div>");
+                }
+                catch
+                { }
+               
                 string[] infoSplit = Regex.Split(rawFollowerInfo, "<li>");
 
                 string subFollowerCount = getBetween(infoSplit[2], "<span class=\"counts_followed_by\">", "</span>");
@@ -8498,23 +8633,42 @@ namespace DemoStagramPro
                 DataBaseHandler.InsertQuery("insert into tb_scrape_follower(username, name, follower_count, following_count, picture_count, day, month, year) values('" + ClGlobul.scrapeFollowerAndFollowingUsername + "','" + followerUsername + "','" + subFollowerCount + "','" + subFollowingCount + "','" + pictureCount + "','" + day + "','" + month + "','" + year + "')", "tb_scrape_follower");
                 AddToScrapeFollowersLogger("[ " + DateTime.Now + "] => " + "[ Scraped detail saved of username-" + followerUsername + " ]");
 
-                if (!string.IsNullOrEmpty(txtminScrapuser.Text) && NumberHelper.ValidateNumber(txtminScrapuser.Text))
-                {
-                    mindelay = Convert.ToInt32(txtminScrapuser.Text);
-                }
-                if (!string.IsNullOrEmpty(txtmaxscrapuser.Text) && NumberHelper.ValidateNumber(txtmaxscrapuser.Text))
-                {
-                    maxdelay = Convert.ToInt32(txtmaxscrapuser.Text);
-                }
+                 
+                  if (!string.IsNullOrEmpty(followerUsername))
+                  {
+                      #region CSV Write
+                      try
+                      {
+                          string CSVData = ClGlobul.scrapeFollowerAndFollowingUsername.Replace(",", string.Empty) + "," + followerUsername.Replace(",", string.Empty) + "," + subFollowerCount.Replace(",", string.Empty) + "," + subFollowingCount.Replace(",", string.Empty) + "," + pictureCount.Replace(",", string.Empty) + "," + day.Replace(",", string.Empty) + "," + month.Replace(",", string.Empty) + "," + year.Replace(",", string.Empty);
+                          GlobusFileHelper.ExportDataCSVFile(CSVHeader, CSVData, CSVPath + ClGlobul.scrapeFollowerAndFollowingUsername +".csv");
+                      }
+                      catch { }
+                      try
+                      {
 
-                lock (_lockObject)
-                {
-                    int delay = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
-                    AddToScrapeFollowersLogger("[ " + DateTime.Now + " ] => [ Delay For " + delay + " Seconds ]");
-                    Thread.Sleep(delay * 1000);
-                }
+                          AddToScrapeFollowersLogger("[" + followerUsername + "," + "followerUsername:" + "," + subFollowingCount + "," + "subFollowingCount:" + "," + pictureCount + "," + "pictureCount" + "," + day + "," + "day" + "," + month + "," + "month" + "," + year + "," + "year]");
 
+                      }
+                      catch { };
 
+                      #endregion
+                      if (!string.IsNullOrEmpty(txtminScrapuser.Text) && NumberHelper.ValidateNumber(txtminScrapuser.Text))
+                      {
+                          mindelay = Convert.ToInt32(txtminScrapuser.Text);
+                      }
+                      if (!string.IsNullOrEmpty(txtmaxscrapuser.Text) && NumberHelper.ValidateNumber(txtmaxscrapuser.Text))
+                      {
+                          maxdelay = Convert.ToInt32(txtmaxscrapuser.Text);
+                      }
+
+                      lock (_lockObject)
+                      {
+                          int delay = RandomNumberGenerator.GenerateRandom(mindelay, maxdelay);
+                          AddToScrapeFollowersLogger("[ " + DateTime.Now + " ] => [ Delay For " + delay + " Seconds ]");
+                          Thread.Sleep(delay * 1000);
+                      }
+
+                  }
             }
             catch (Exception ex)
             {
@@ -8639,7 +8793,7 @@ namespace DemoStagramPro
                 }
 
                 Thread.Sleep(1000);
-                string followingPageSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(followingUrl));
+                string followingPageSource = accountManager.httpHelper.getHtmlfromUrl(new Uri(followingUrl),"");
                 string followingUsername = getBetween(followingUrl + "@", ".me/n/", "@");
                 AddToScrapeFollowersLogger("[ " + DateTime.Now + "] " + "[ Scraping detail from profile with username-" + followingUsername + " ]");
                 string rawFollowingInfo = getBetween(followingPageSource, "<div class=\"userinfo\">", "</div>");
@@ -8658,7 +8812,7 @@ namespace DemoStagramPro
                 //string pictureCount = count_SPlit_Url[1].Trim();
                 string pictureCount = getBetween(followingPageSource, "\"counts_media\">", "</span>");
 
-                string latestPostPageResponse = accountManager.httpHelper.getHtmlfromUrl(new Uri(latestPostUrl));
+                string latestPostPageResponse = accountManager.httpHelper.getHtmlfromUrl(new Uri(latestPostUrl),"");
                 double uTimestamp = Convert.ToDouble(getBetween(latestPostPageResponse, "data-utime=\"", "\">"));
                 DateTime rawDate = UnixTimeStampToDateTime(uTimestamp);
                 string date = rawDate.ToString("dd-MM-yyyy");
@@ -9119,7 +9273,7 @@ namespace DemoStagramPro
                             GramBoardProFileHelper.AppendStringToTextfileNewLine("------------------------------------------------------------------------------------------------", GramBoardProFileHelper.ErrorLogFilePathForPhotolike);
                         }
                     }
-                    AddToUnfollowLogger("[ " + DateTime.Now + " ] => [ All Process is Aborted ]");
+                   // AddToUnfollowLogger("[ " + DateTime.Now + " ] => [ All Process is Aborted ]");
                 }).Start();
             }
             catch (Exception ex)
@@ -9317,7 +9471,7 @@ namespace DemoStagramPro
             string mainUrl = "http://websta.me/";
             if (IsDownLoadImageUsingHashTag)
             {
-                url = mainUrl + "tag/" + itemImageTag;
+                url = mainUrl + "tag/" + itemImageTag.Replace("#",string.Empty);
                 AddTophotoLogger("[ " + DateTime.Now + " ] =>[Process Using HashTag =" + itemImageTag);
             }
            
@@ -9339,13 +9493,13 @@ namespace DemoStagramPro
 
             try
             {
-                pageSource = objGlobusHttpHelper.getHtmlfromUrl(new Uri(url));
+                pageSource = objGlobusHttpHelper.getHtmlfromUrl(new Uri(url),"");
             }
             catch { }
 
             if (string.IsNullOrEmpty(pageSource))
             {
-                pageSource = objGlobusHttpHelper.getHtmlfromUrl(new Uri(url));
+                pageSource = objGlobusHttpHelper.getHtmlfromUrl(new Uri(url),"");
             }
           
            
@@ -9454,10 +9608,10 @@ namespace DemoStagramPro
 
                             if (!string.IsNullOrEmpty(pageLink))
                             {
-                                pageSource = objGlobusHttpHelper.getHtmlfromUrl(new Uri(pageLink));
+                                pageSource = objGlobusHttpHelper.getHtmlfromUrl(new Uri(pageLink),"");
                                 if (string.IsNullOrEmpty(pageSource))
                                 {
-                                    pageSource = objGlobusHttpHelper.getHtmlfromUrl(new Uri(pageLink));
+                                    pageSource = objGlobusHttpHelper.getHtmlfromUrl(new Uri(pageLink),"");
                                 }
                             }
 
@@ -9485,7 +9639,7 @@ namespace DemoStagramPro
                                         string response = string.Empty;
                                         try
                                         {
-                                            response = objGlobusHttpHelper.getHtmlfromUrl(new Uri(pageLink));
+                                            response = objGlobusHttpHelper.getHtmlfromUrl(new Uri(pageLink),"");
                                         }
                                         catch { }
                                         if (!string.IsNullOrEmpty(response))
@@ -9665,24 +9819,24 @@ namespace DemoStagramPro
 
         private void btn_uploadAccount1_Click(object sender, EventArgs e)
         {
-            try
-            {
-                using (OpenFileDialog ofd = new OpenFileDialog())
-                {
-                    ofd.InitialDirectory = Application.StartupPath;
-                    ofd.Filter = "Text Files (*.txt)|*.txt";
-                    if (ofd.ShowDialog() == DialogResult.OK)
-                    {
-                        txtAddAccounts1.Text = ofd.FileName;
-                        ReadLargeAccountsFile(ofd.FileName);
-                    }
-                }
-                loaddatafmdb();
-            }
-            catch (Exception ex)
-            {
-                AddToLogger1("[ " + DateTime.Now + " ] => [  Upload Accounts Loaded ]");
-            }
+            //try
+            //{
+            //    using (OpenFileDialog ofd = new OpenFileDialog())
+            //    {
+            //        ofd.InitialDirectory = Application.StartupPath;
+            //        ofd.Filter = "Text Files (*.txt)|*.txt";
+            //        if (ofd.ShowDialog() == DialogResult.OK)
+            //        {
+            //            txtAddAccounts1.Text = ofd.FileName;
+            //            ReadLargeAccountsFile(ofd.FileName);
+            //        }
+            //    }
+            //    loaddatafmdb();
+            //}
+            //catch (Exception ex)
+            //{
+            //    AddToLogger1("[ " + DateTime.Now + " ] => [  Upload Accounts Loaded ]");
+            //}
         }
 
         private void btnAccountcheck_Click_1(object sender, EventArgs e)
@@ -9823,11 +9977,6 @@ namespace DemoStagramPro
 
         }
 
-        private void btnUnfollerStop1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnUploadHashtag_Click(object sender, EventArgs e)
         {
             try
@@ -9909,16 +10058,51 @@ namespace DemoStagramPro
         {
           
         }
+
+        private void chkHashCommentLike_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox13_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnUnfollerStop1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void BtnAccountCreater_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (Globals.IsAccountopen)
+                {
+
+                    Globals.IsAccountopen = false;
+                    FrmAccount frmaccounts = new FrmAccount();
+                    frmaccounts.Show();
+                    try
+                    {
+                        loaddatafmdb();
+                    }
+                    catch { };
+                }
+                else
+                {
+                    MessageBox.Show("Account Form is already Open.", "Alert");
+                }
+            }
+            catch { };
+        }
+
+        private void cmbScrapeFollowersUsername_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
-    
-           
-    
-               
-
-
-        
-    
-
     class classsforlogger
     {
 
@@ -9950,9 +10134,6 @@ namespace DemoStagramPro
         }
         
     }
-
-
-
 
     class WriteInLoggerClass : Form
     {
@@ -9998,7 +10179,7 @@ namespace DemoStagramPro
                                                 }
 
                                                 //objbbbFrmMain.lstLogger.Items.Insert(0, loggingEvent.TimeStamp + "\t" + loggingEvent.LoggerName + "\r\t" + loggingEvent.RenderedMessage);
-                                                objbbbFrmMain.lstHashLogger.Items.Insert(0, loggingEvent.TimeStamp + "\r\t" + loggingEvent.RenderedMessage);
+                                                objbbbFrmMain.lstHashLogger.Items.Add(loggingEvent.TimeStamp + "\t" + loggingEvent.RenderedMessage);
                                             }
                                             catch (Exception ex)
                                             {
@@ -10018,7 +10199,7 @@ namespace DemoStagramPro
                                             }
 
                                             //objbbbFrmMain.lstLogger.Items.Insert(0, loggingEvent.TimeStamp + "\t" + loggingEvent.LoggerName + "\r\t" + loggingEvent.RenderedMessage);
-                                            objbbbFrmMain.lstHashLogger.Items.Insert(0, loggingEvent.TimeStamp + "\r\t" + loggingEvent.RenderedMessage);
+                                            objbbbFrmMain.lstHashLogger.Items.Add(loggingEvent.TimeStamp + "\t" + loggingEvent.RenderedMessage);
                                         }
 
                                         catch (Exception ex)
@@ -10052,7 +10233,7 @@ namespace DemoStagramPro
                                             }
 
                                             // objbbbFrmMain.lstLogger.Items.Insert(0, loggingEvent.TimeStamp + "\t" + loggingEvent.LoggerName + "\t\t" + loggingEvent.RenderedMessage);
-                                            objbbbFrmMain.lstHashLogger.Items.Insert(0, loggingEvent.TimeStamp + "\t\t" + loggingEvent.RenderedMessage);
+                                            objbbbFrmMain.lstHashLogger.Items.Add(loggingEvent.TimeStamp + "\t" + loggingEvent.RenderedMessage);
                                         }
                                         catch (Exception ex)
                                         {
@@ -10072,7 +10253,7 @@ namespace DemoStagramPro
                                         }
 
                                         //objbbbFrmMain.lstLogger.Items.Insert(0, loggingEvent.TimeStamp + "\t" + loggingEvent.LoggerName + "\t\t" + loggingEvent.RenderedMessage);
-                                        objbbbFrmMain.lstHashLogger.Items.Insert(0, loggingEvent.TimeStamp + "\t\t" + loggingEvent.RenderedMessage);
+                                        objbbbFrmMain.lstHashLogger.Items.Add(loggingEvent.TimeStamp + "\t" + loggingEvent.RenderedMessage);
                                     }
                                     catch (Exception ex)
                                     {
@@ -10098,12 +10279,11 @@ namespace DemoStagramPro
             {
                 GramBoardLogHelper.log.Error("Error : 76" + ex.Message);
             }
-
         }
-
-
     }
     #endregion
+
+
 
 
 }

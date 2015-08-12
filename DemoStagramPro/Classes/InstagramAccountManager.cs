@@ -63,11 +63,13 @@ namespace InstagramManager.Classes
 
                 string secondURL = "https://instagram.com/oauth/authorize/?client_id=9d836570317f4c18bca0db6d2ac38e29&redirect_uri=http://websta.me/&response_type=code&scope=comments+relationships+likes";
                 string res_secondURL = string.Empty;
+                ChilkatHttpHelpr objchilkat = new ChilkatHttpHelpr();
                 if (!string.IsNullOrEmpty(proxyAddress) && !string.IsNullOrEmpty(proxyPort))
                 {
                     try
                     {
-                        res_secondURL = httpHelper.getHtmlfromUrlProxy(new Uri(secondURL), proxyAddress, int.Parse(proxyPort), proxyUsername, proxyPassword);
+                        //res_secondURL = httpHelper.getHtmlfromUrlProxy(new Uri(secondURL), proxyAddress, int.Parse(proxyPort), proxyUsername, proxyPassword);
+                        res_secondURL = objchilkat.GetHtmlProxy(secondURL, proxyAddress, proxyPort, proxyUsername, proxyPassword);
                     }
                     catch { };
 
@@ -83,10 +85,25 @@ namespace InstagramManager.Classes
                    
                 //string authlogin = "https://instagram.com/oauth/authorize/?client_id=9d836570317f4c18bca0db6d2ac38e29&redirect_uri=http://websta.me/&response_type=code&scope=comments+relationships+likes";
                 //string res_nextUrl1 = httpHelper.getHtmlfromUrl(new Uri(authlogin), "");
+                string nextUrl = string.Empty;
+                string res_nextUrl = string.Empty;
 
-                string nextUrl = "https://instagram.com/accounts/login/?force_classic_login=&next=/oauth/authorize/%3Fclient_id%3D9d836570317f4c18bca0db6d2ac38e29%26redirect_uri%3Dhttp%3A//websta.me/%26response_type%3Dcode%26scope%3Dcomments%2Brelationships%2Blikes";
+                if (!string.IsNullOrEmpty(res_secondURL))
+                {
+                    nextUrl = "https://instagram.com/accounts/login/?force_classic_login=&next=/oauth/authorize/%3Fclient_id%3D9d836570317f4c18bca0db6d2ac38e29%26redirect_uri%3Dhttp%3A//websta.me/%26response_type%3Dcode%26scope%3Dcomments%2Brelationships%2Blikes";
+
+                    res_nextUrl = httpHelper.getHtmlfromUrl(new Uri(nextUrl), "");//postFormDataProxy
+                }
+                else
+                {
+                    Log("[ " + DateTime.Now + " ] => [ Logged in Failed with Account :" + Username + " ]");
+                    Status = "Failed";
+                    this.LoggedIn = false;
+                }
+
+                //string nextUrl = "https://instagram.com/accounts/login/?force_classic_login=&next=/oauth/authorize/%3Fclient_id%3D9d836570317f4c18bca0db6d2ac38e29%26redirect_uri%3Dhttp%3A//websta.me/%26response_type%3Dcode%26scope%3Dcomments%2Brelationships%2Blikes";
                
-                string res_nextUrl = httpHelper.getHtmlfromUrl(new Uri(nextUrl), "");//postFormDataProxy
+                //string res_nextUrl = httpHelper.getHtmlfromUrl(new Uri(nextUrl), "");//postFormDataProxy
                 
 
 
@@ -150,7 +167,6 @@ namespace InstagramManager.Classes
             }
 
         }
-
 
         public string LoginNew(ref GlobDramProHttpHelper _GlobusHttpHelper)
         {

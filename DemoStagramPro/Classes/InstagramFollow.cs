@@ -76,10 +76,10 @@ namespace InstagramManager.Classes
           
             try
             {
-                if (UserPageContent.Contains("This user is private."))
-                {
-                    return "private";
-                }
+                //if (UserPageContent.Contains("This user is private."))
+                //{
+                //    return "private";
+                //}
                 string PK = string.Empty;
                 if (UserPageContent.Contains(""))
                 {

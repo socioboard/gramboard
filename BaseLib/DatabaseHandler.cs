@@ -14,7 +14,7 @@ namespace BaseLib
         //public static string CONstr = "Data Source=" + Application.StartupPath + "\\DB_PINDominator.db" + ";Version=3;";
         //public static string CONstr = "Data Source=" + Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Instagram\\DB_Instagram.db" + ";Version=3;";
 
-        public static string CONstr = "Data Source=" + Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\InstagramDB\\Instagram.db" + ";Version=3;";
+        public static string CONstr = "Data Source=" + Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\GramBoardPro\\GramBoardPro.db" + ";Version=3;";
         public static DataSet SelectQuery(string query, string tablename)
         {
             //try

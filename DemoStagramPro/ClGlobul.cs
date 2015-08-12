@@ -18,6 +18,7 @@ namespace DemoStagramPro
        public static int NumberOfProfilesToFollow = 0;
        public static int NumberofSnapsVideosToLike = 0;
        public static int NumberofSnapsVideosToComment = 0;
+       public static int SnapVideosCounter = 0;
        public static int proxyIndex = 0;
 
        public static bool checkHashTagLiker = false;
@@ -38,6 +39,8 @@ namespace DemoStagramPro
        public static int countNoOFAccountHashComment = 0;
        public static int countNoOFAccountHashLike = 0;
        public static int countNOOfFollowersandImageDownload = 0;
+       public static int SnapVideosCounterfollow = 0;
+       public static int SnapVideosCounterComment = 0;
        public static List<string> lstUrls = new List<string>();
       
 
